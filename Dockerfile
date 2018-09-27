@@ -19,6 +19,8 @@ ADD assemble-and-restart ${SUPERVISORD_DIR}/bin
 # ADD assemble ${SUPERVISORD_DIR}/bin
 # RUN ${SUPERVISORD_DIR}/bin/assemble
 ADD run ${SUPERVISORD_DIR}/bin
+ADD s2i-setup ${SUPERVISORD_DIR}/bin
+ADD setup-and-run ${SUPERVISORD_DIR}/bin
 
 RUN chgrp -R 0 ${SUPERVISORD_DIR}  && \
     chmod -R g+rwX ${SUPERVISORD_DIR} && \

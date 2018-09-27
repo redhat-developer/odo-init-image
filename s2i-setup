@@ -1,0 +1,13 @@
+#!/bin/bash
+set -x
+set -eo pipefail
+
+# We need to setup these directories before the actual assembly process
+# because odo copies into some of these directories before running assemble
+
+# s2i fails when /tmp/src/ is empty. Also this is needed for Java s2i
+mkdir -p /tmp/src
+touch /tmp/src/.dummy
+
+# source directory from other s2i images
+mkdir -p /opt/app-root/src

@@ -2,14 +2,14 @@
 set -x
 set -eo pipefail
 
-# S2i fails when /tmp/src/ is empty. 
-mkdir -p /tmp/src
-touch /tmp/src/.dummy
-
-# We now run the assembly script. If there is a custom one written in the 
+# We now run the assembly script. If there is a custom one written in the
 # source files, we use that instead.
 if [ -f /opt/app-root/src/.s2i/bin/assemble ]; then
     /opt/app-root/src/.s2i/bin/assemble
+elif [ -f /usr/local/s2i/assemble ]; then # java s2i
+    rm -rf /opt/app-root/src/.git # ensure we don't copy git files since they can cause problems
+    cp -a /opt/app-root/src/. /tmp/src # java s2i expects the source to be under /tmp/src
+    /usr/local/s2i/assemble
 else
     /usr/libexec/s2i/assemble
 fi
