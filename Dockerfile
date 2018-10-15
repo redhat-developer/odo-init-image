@@ -1,6 +1,6 @@
 #
 # This is an "initContainer" image using the base "source-to-image" OpenShift template
-# in order to apprpriately inject the supervisord binary into the application container.
+# in order to appropriately inject the supervisord binary into the application container.
 #
 
 FROM centos:7
