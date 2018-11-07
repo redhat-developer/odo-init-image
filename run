@@ -4,10 +4,10 @@ set -eo pipefail
 
 # We now run the run script. If there is a custom one written in the
 # source files, we use that instead.
-if [ -f /opt/app-root/src/.s2i/bin/run ]; then
-    exec /opt/app-root/src/.s2i/bin/run
-elif [ -f /usr/local/s2i/run ]; then # java s2i
-    exec /usr/local/s2i/run
+if [ -f ${ODO_S2I_SRC_BIN_PATH}/.s2i/bin/run ]; then
+    exec ${ODO_S2I_SRC_BIN_PATH}/.s2i/bin/run
+elif [ -f ${ODO_S2I_SCRIPTS_URL}/run ]; then # java s2i
+    exec ${ODO_S2I_SCRIPTS_URL}/run
 else
     exec /usr/libexec/s2i/run
 fi

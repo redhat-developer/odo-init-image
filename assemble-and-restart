@@ -4,11 +4,10 @@ set -eo pipefail
 
 # We now run the assembly script. If there is a custom one written in the
 # source files, we use that instead.
-if [ -f /opt/app-root/src/.s2i/bin/assemble ]; then
-    /opt/app-root/src/.s2i/bin/assemble
+if [ -f ${ODO_S2I_SRC_BIN_PATH}/.s2i/bin/assemble ]; then
+    ${ODO_S2I_SRC_BIN_PATH}/.s2i/bin/assemble
 elif [ -n "${ODO_S2I_SCRIPTS_URL}" ]; then # For S2I scripts path, use the env var set by odo if not available in component source
     rm -rf /opt/app-root/src/.git # ensure we don't copy git files since they can cause problems
-    cp -a /opt/app-root/src/. /tmp/src # java s2i expects the source to be under /tmp/src
     ${ODO_S2I_SCRIPTS_URL}/assemble
 else
     /usr/libexec/s2i/assemble
