@@ -5,9 +5,19 @@ set -eo pipefail
 # We need to setup these directories before the actual assembly process
 # because odo copies into some of these directories before running assemble
 
+# source directory from other s2i images
+mkdir -p ${ODO_S2I_SRC_BIN_PATH}
 # s2i fails when /tmp/src/ is empty. Also this is needed for Java s2i
-mkdir -p /tmp/src
+touch ${ODO_S2I_SRC_BIN_PATH}/.dummy
+
+# NodeJs s2i expects /tmp to exist even when its neither destination nor deployments-dir
+mkdir -p /tmp/src/
 touch /tmp/src/.dummy
 
-# source directory from other s2i images
+# some s2i images additionally expect ${ODO_S2I_SRC_BIN_PATH}/src to exist ex: /tmp/src for java
+if [[ ${ODO_S2I_SRC_BIN_PATH} != *"/src"* ]];then
+  mkdir -p ${ODO_S2I_SRC_BIN_PATH}/src
+  touch ${ODO_S2I_SRC_BIN_PATH}/src/.dummy
+fi
+
 mkdir -p /opt/app-root/src
