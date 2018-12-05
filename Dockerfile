@@ -7,6 +7,9 @@ FROM centos:7
 
 ENV SUPERVISORD_DIR /opt/supervisord
 
+ADD https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64 ${SUPERVISORD_DIR}/bin/dumb-init 
+RUN chmod +x ${SUPERVISORD_DIR}/bin/dumb-init
+
 RUN mkdir -p ${SUPERVISORD_DIR}/conf ${SUPERVISORD_DIR}/bin
 
 ADD supervisor.conf ${SUPERVISORD_DIR}/conf/
