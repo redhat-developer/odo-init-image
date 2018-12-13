@@ -1,13 +1,14 @@
 #!/bin/bash
 
+set -e 
+
 # Go get Odo
-go get github.com/redhat-developer/odo
+git clone https://github.com/redhat-developer/odo odomaster
 
 # Retrieve the version / what's currently being used as SupervisorD
-IMAGE=`cat $GOPATH/redhat-developer/odo/pkg/occlient/occlient.go | grep "bootstrapperImage = " | cut -d \" -f2 | sed '/^\s*$/d'`
+IMAGE=`cat odomaster/pkg/occlient/occlient.go | grep "bootstrapperImage = " | cut -d \" -f2 | sed '/^\s*$/d'`
+
+rm -rf odomaster
 
 # Build the container
 docker build -t $IMAGE .
-
-# Print go version
-go version
