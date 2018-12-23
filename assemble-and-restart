@@ -2,6 +2,32 @@
 set -x
 set -eo pipefail
 
+# If WorkingDir is injected as an env from odo and destination path is not equal to WorkingDir injected by odo
+if [ ! -z "${ODO_S2I_WORKING_DIR}" ] && [ "${ODO_S2I_SRC_BIN_PATH}" != "${ODO_S2I_WORKING_DIR}" ]; then
+    # If ODO_SRC_BACKUP_DIR is injected by odo
+    if [ -n  "$ODO_SRC_BACKUP_DIR" ]; then
+        # If it doesn't exit create it
+        if [ ! -d ${ODO_SRC_BACKUP_DIR} ]; then
+            mkdir -p ${ODO_SRC_BACKUP_DIR}/src
+        fi
+        # Backup the sources in DestinationDir to ODO_SRC_BACKUP_DIR bcoz the assemble script for some s2i images
+        # moves sources from DestinationDir to WorkingDir thereby deleting it there(DestinationDir). So, back it up
+        # for partial push use cases like watch
+        rsync -r ${ODO_S2I_SRC_BIN_PATH}/src/. ${ODO_SRC_BACKUP_DIR}/src/
+    fi
+    # Clear all those dirs in WorkingDir that exist in DestinationDir so that when assemble script moves sources from
+    # DestinationDir to WorkingDir, it sees the directory clean and doesn't complain:
+    # https://github.com/redhat-developer/odo/issues/1054
+    for file in `ls -a ${ODO_S2I_SRC_BIN_PATH}/src/`
+    do
+        if [ $file != "." ] && [ $file != ".." ]; then
+            rm -fr $ODO_S2I_WORKING_DIR/$file
+        fi
+    done
+    # In case of java clear off the target directory
+    rm -fr ${ODO_S2I_SRC_BIN_PATH}/src/target
+fi
+
 # We now run the assembly script. If there is a custom one written in the
 # source files, we use that instead.
 if [ -f ${ODO_S2I_SRC_BIN_PATH}/.s2i/bin/assemble ]; then
@@ -11,6 +37,12 @@ elif [ -n "${ODO_S2I_SCRIPTS_URL}" ]; then # For S2I scripts path, use the env v
     ${ODO_S2I_SCRIPTS_URL}/assemble
 else
     /usr/libexec/s2i/assemble
+fi
+
+# After assemble script is run(which delets sources from destination dir by doing mv of them to the WorkingDir) and if only its component created from source,
+# copy back the sources from Source backup dir to DestinationDir for subsequent push of only updates by watch
+if [ ! -z "${ODO_S2I_WORKING_DIR}" ] && [ -n  "$ODO_SRC_BACKUP_DIR" ] && [ "${ODO_S2I_SRC_BIN_PATH}" != "${ODO_S2I_WORKING_DIR}" ]; then
+    rsync -r ${ODO_SRC_BACKUP_DIR}/src/. ${ODO_S2I_SRC_BIN_PATH}/src/
 fi
 
 ### 
