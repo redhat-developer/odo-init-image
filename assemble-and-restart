@@ -25,7 +25,9 @@ if [ ! -z "${ODO_S2I_WORKING_DIR}" ] && [ "${ODO_S2I_SRC_BIN_PATH}" != "${ODO_S2
         fi
     done
     # In case of java clear off the target directory
-    rm -fr ${ODO_S2I_SRC_BIN_PATH}/src/target
+    if [ -n "$ODO_S2I_BUILDER_IMG" ] && [ "$ODO_S2I_BUILDER_IMG" == "redhat-openjdk-18/openjdk18-openshift" ]; then
+        rm -fr ${ODO_S2I_SRC_BIN_PATH}/src/target
+    fi
 fi
 
 # We now run the assembly script. If there is a custom one written in the
