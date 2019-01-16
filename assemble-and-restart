@@ -2,29 +2,46 @@
 set -x
 set -eo pipefail
 
-# If WorkingDir is injected as an env from odo and destination path is not equal to WorkingDir injected by odo
+# If WorkingDir is injected as an env from odo and destination path is not equal to WorkingDir
 if [ ! -z "${ODO_S2I_WORKING_DIR}" ] && [ "${ODO_S2I_SRC_BIN_PATH}" != "${ODO_S2I_WORKING_DIR}" ]; then
+
     # If ODO_SRC_BACKUP_DIR is injected by odo
     if [ -n  "$ODO_SRC_BACKUP_DIR" ]; then
+
         # If it doesn't exit create it
         if [ ! -d ${ODO_SRC_BACKUP_DIR} ]; then
             mkdir -p ${ODO_SRC_BACKUP_DIR}/src
         fi
-        # Backup the sources in DestinationDir to ODO_SRC_BACKUP_DIR bcoz the assemble script for some s2i images
+
+        # Backup the sources in DestinationDir to ODO_SRC_BACKUP_DIR because the assemble script for some s2i images
         # moves sources from DestinationDir to WorkingDir thereby deleting it there(DestinationDir). So, back it up
         # for partial push use cases like watch
         rsync -r ${ODO_S2I_SRC_BIN_PATH}/src/. ${ODO_SRC_BACKUP_DIR}/src/
     fi
+
+    # Backup field separators and set it to \n to clean the destination dir of even those files and folders that have space in name
+    # the shell's ls -A interprets for some reason the space as a new line and hence including '\n' in IFS works-around it
+    b_IFS=$IFS
+    b_OFS=$OIFS
+
+    OIFS="$IFS"
+    IFS=$'\n'
+
     # Clear all those dirs in WorkingDir that exist in DestinationDir so that when assemble script moves sources from
     # DestinationDir to WorkingDir, it sees the directory clean and doesn't complain:
     # https://github.com/redhat-developer/odo/issues/1054
-    for file in `ls -a ${ODO_S2I_SRC_BIN_PATH}/src/`
+    for file in `ls -A ${ODO_S2I_SRC_BIN_PATH}/src/`
     do
-        if [ $file != "." ] && [ $file != ".." ]; then
-            rm -fr $ODO_S2I_WORKING_DIR/$file
-        fi
+            rm -fr "$ODO_S2I_WORKING_DIR/$file"
     done
+
+    # Restore OIFS and IFS to previous values
+    OIFS=$b_OFS
+    IFS=$b_IFS
+
     # In case of java clear off the target directory
+    # ToDo: This is a temporary hack to work-around the issue with openjdk s2i image.
+    # Eventually, idea is to try to make this generic and agnostic of any particular s2i image
     if [ -n "$ODO_S2I_BUILDER_IMG" ] && [ "$ODO_S2I_BUILDER_IMG" == "redhat-openjdk-18/openjdk18-openshift" ]; then
         rm -fr ${ODO_S2I_SRC_BIN_PATH}/src/target
     fi
@@ -52,10 +69,12 @@ fi
 # copy content of directory to /opt/app-root/backup directory
 # Ref: https://github.com/redhat-developer/odo/issues/445
 if [ -n "$ODO_S2I_DEPLOYMENT_DIR" ]; then
+
     if [ ! -d /opt/app-root/backup ]; then
         mkdir -p /opt/app-root/backup
     fi
-   cp -rf ${ODO_S2I_DEPLOYMENT_DIR}/. /opt/app-root/backup/
+
+   rsync -r ${ODO_S2I_DEPLOYMENT_DIR}/. /opt/app-root/backup/
 fi
 ####
 
