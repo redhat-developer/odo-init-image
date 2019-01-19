@@ -3,7 +3,7 @@ set -x
 set -eo pipefail
 
 # If WorkingDir is injected as an env from odo and destination path is not equal to WorkingDir
-if [ ! -z "${ODO_S2I_WORKING_DIR}" ] && [ "${ODO_S2I_SRC_BIN_PATH}" != "${ODO_S2I_WORKING_DIR}" ]; then
+if [ ! -z "${ODO_S2I_WORKING_DIR}" ] && ([ "${ODO_S2I_SRC_BIN_PATH}" != "${ODO_S2I_WORKING_DIR}" ] || [ "${ODO_S2I_DEPLOYMENT_DIR}" != "${ODO_S2I_WORKING_DIR}" ]); then
 
     # If ODO_SRC_BACKUP_DIR is injected by odo
     if [ -n  "$ODO_SRC_BACKUP_DIR" ]; then
@@ -60,7 +60,7 @@ fi
 
 # After assemble script is run(which delets sources from destination dir by doing mv of them to the WorkingDir) and if only its component created from source,
 # copy back the sources from Source backup dir to DestinationDir for subsequent push of only updates by watch
-if [ ! -z "${ODO_S2I_WORKING_DIR}" ] && [ -n  "$ODO_SRC_BACKUP_DIR" ] && [ "${ODO_S2I_SRC_BIN_PATH}" != "${ODO_S2I_WORKING_DIR}" ]; then
+if [ ! -z "${ODO_S2I_WORKING_DIR}" ] && [ -n  "$ODO_SRC_BACKUP_DIR" ] && ([ "${ODO_S2I_SRC_BIN_PATH}" != "${ODO_S2I_WORKING_DIR}" ] || [ "${ODO_S2I_DEPLOYMENT_DIR}" != "${ODO_S2I_WORKING_DIR}" ]); then
     rsync -r ${ODO_SRC_BACKUP_DIR}/src/. ${ODO_S2I_SRC_BIN_PATH}/src/
 fi
 
