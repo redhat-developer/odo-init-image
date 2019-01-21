@@ -2,8 +2,8 @@
 set -x
 set -eo pipefail
 
-# If WorkingDir is injected as an env from odo and destination path is not equal to WorkingDir
-if [ ! -z "${ODO_S2I_WORKING_DIR}" ] && ([ "${ODO_S2I_SRC_BIN_PATH}" != "${ODO_S2I_WORKING_DIR}" ] || [ "${ODO_S2I_DEPLOYMENT_DIR}" != "${ODO_S2I_WORKING_DIR}" ]); then
+# If WorkingDir is injected as an env from odo and destination path is not equal to WorkingDir(if not copying directly to working dir) and deployment dir is not working dir
+if [ ! -z "${ODO_S2I_WORKING_DIR}" ] && ([ "${ODO_S2I_SRC_BIN_PATH}" != "${ODO_S2I_WORKING_DIR}" ] && [ "${ODO_S2I_DEPLOYMENT_DIR}" != "${ODO_S2I_WORKING_DIR}" ]); then
 
     # If ODO_SRC_BACKUP_DIR is injected by odo
     if [ -n  "$ODO_SRC_BACKUP_DIR" ]; then
@@ -16,7 +16,7 @@ if [ ! -z "${ODO_S2I_WORKING_DIR}" ] && ([ "${ODO_S2I_SRC_BIN_PATH}" != "${ODO_S
         # Backup the sources in DestinationDir to ODO_SRC_BACKUP_DIR because the assemble script for some s2i images
         # moves sources from DestinationDir to WorkingDir thereby deleting it there(DestinationDir). So, back it up
         # for partial push use cases like watch
-        rsync -a ${ODO_S2I_SRC_BIN_PATH}/src/. ${ODO_SRC_BACKUP_DIR}/src/
+        rsync -rlO ${ODO_S2I_SRC_BIN_PATH}/src/. ${ODO_SRC_BACKUP_DIR}/src/
     fi
 
     # Backup field separators and set it to \n to clean the destination dir of even those files and folders that have space in name
@@ -49,8 +49,8 @@ fi
 
 # We now run the assembly script. If there is a custom one written in the
 # source files, we use that instead.
-if [ -f ${ODO_S2I_SRC_BIN_PATH}/.s2i/bin/assemble ]; then
-    ${ODO_S2I_SRC_BIN_PATH}/.s2i/bin/assemble
+if [ -f ${ODO_S2I_SRC_BIN_PATH}/src/.s2i/bin/assemble ]; then
+    ${ODO_S2I_SRC_BIN_PATH}/src/.s2i/bin/assemble
 elif [ -n "${ODO_S2I_SCRIPTS_URL}" ]; then # For S2I scripts path, use the env var set by odo if not available in component source
     rm -rf /opt/app-root/src/.git # ensure we don't copy git files since they can cause problems
     ${ODO_S2I_SCRIPTS_URL}/assemble
@@ -60,8 +60,8 @@ fi
 
 # After assemble script is run(which delets sources from destination dir by doing mv of them to the WorkingDir) and if only its component created from source,
 # copy back the sources from Source backup dir to DestinationDir for subsequent push of only updates by watch
-if [ ! -z "${ODO_S2I_WORKING_DIR}" ] && [ -n  "$ODO_SRC_BACKUP_DIR" ] && ([ "${ODO_S2I_SRC_BIN_PATH}" != "${ODO_S2I_WORKING_DIR}" ] || [ "${ODO_S2I_DEPLOYMENT_DIR}" != "${ODO_S2I_WORKING_DIR}" ]); then
-    rsync -a ${ODO_SRC_BACKUP_DIR}/src/. ${ODO_S2I_SRC_BIN_PATH}/src/
+if [ ! -z "${ODO_S2I_WORKING_DIR}" ] && [ -n  "$ODO_SRC_BACKUP_DIR" ] && ([ "${ODO_S2I_SRC_BIN_PATH}" != "${ODO_S2I_WORKING_DIR}" ] && [ "${ODO_S2I_DEPLOYMENT_DIR}" != "${ODO_S2I_WORKING_DIR}" ]); then
+    rsync -rlO ${ODO_SRC_BACKUP_DIR}/src/. ${ODO_S2I_SRC_BIN_PATH}/src/
 fi
 
 ### 
@@ -74,7 +74,7 @@ if [ -n "$ODO_S2I_DEPLOYMENT_DIR" ]; then
         mkdir -p ${ODO_DEPLOYMENT_BACKUP_DIR}
     fi
 
-   rsync -a ${ODO_S2I_DEPLOYMENT_DIR}/. ${ODO_DEPLOYMENT_BACKUP_DIR}/
+   rsync -rlO ${ODO_S2I_DEPLOYMENT_DIR}/. ${ODO_DEPLOYMENT_BACKUP_DIR}/
 fi
 ####
 
