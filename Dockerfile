@@ -13,8 +13,8 @@ RUN chmod +x ${SUPERVISORD_DIR}/bin/dumb-init
 RUN mkdir -p ${SUPERVISORD_DIR}/conf ${SUPERVISORD_DIR}/bin
 
 ADD supervisor.conf ${SUPERVISORD_DIR}/conf/
-ADD https://raw.githubusercontent.com/sclorg/s2i-base-container/master/core/root/usr/bin/fix-permissions  /usr/bin/fix-permissions
-RUN chmod +x /usr/bin/fix-permissions
+ADD https://raw.githubusercontent.com/sclorg/s2i-base-container/master/core/root/usr/bin/fix-permissions  ${SUPERVISORD_DIR}/bin
+RUN chmod +x ${SUPERVISORD_DIR}/bin/fix-permissions
 
 ADD https://github.com/ochinchina/supervisord/releases/download/v0.5/supervisord_0.5_linux_amd64 ${SUPERVISORD_DIR}/bin/supervisord
 

@@ -11,12 +11,13 @@ if [ ! -z "${ODO_S2I_WORKING_DIR}" ] && ([ "${ODO_S2I_SRC_BIN_PATH}" != "${ODO_S
         # If it doesn't exit create it
         if [ ! -d ${ODO_SRC_BACKUP_DIR} ]; then
             mkdir -p ${ODO_SRC_BACKUP_DIR}/src
+            /var/lib/supervisord/bin/fix-permissions ${ODO_SRC_BACKUP_DIR}/src
         fi
 
         # Backup the sources in DestinationDir to ODO_SRC_BACKUP_DIR because the assemble script for some s2i images
         # moves sources from DestinationDir to WorkingDir thereby deleting it there(DestinationDir). So, back it up
         # for partial push use cases like watch
-        rsync -a ${ODO_S2I_SRC_BIN_PATH}/src/. ${ODO_SRC_BACKUP_DIR}/src/
+        rsync -aO ${ODO_S2I_SRC_BIN_PATH}/src/. ${ODO_SRC_BACKUP_DIR}/src/
     fi
 
     # Backup field separators and set it to \n to clean the destination dir of even those files and folders that have space in name
@@ -61,7 +62,7 @@ fi
 # After assemble script is run(which delets sources from destination dir by doing mv of them to the WorkingDir) and if only its component created from source,
 # copy back the sources from Source backup dir to DestinationDir for subsequent push of only updates by watch
 if [ ! -z "${ODO_S2I_WORKING_DIR}" ] && [ -n  "$ODO_SRC_BACKUP_DIR" ] && ([ "${ODO_S2I_SRC_BIN_PATH}" != "${ODO_S2I_WORKING_DIR}" ] || [ "${ODO_S2I_DEPLOYMENT_DIR}" != "${ODO_S2I_WORKING_DIR}" ]); then
-    rsync -a ${ODO_SRC_BACKUP_DIR}/src/. ${ODO_S2I_SRC_BIN_PATH}/src/
+    rsync -aO ${ODO_SRC_BACKUP_DIR}/src/. ${ODO_S2I_SRC_BIN_PATH}/src/
 fi
 
 ### 
@@ -72,9 +73,10 @@ if [ -n "$ODO_S2I_DEPLOYMENT_DIR" ]; then
 
     if [ ! -d "${ODO_DEPLOYMENT_BACKUP_DIR}" ]; then
         mkdir -p ${ODO_DEPLOYMENT_BACKUP_DIR}
+        /var/lib/supervisord/bin/fix-permissions ${ODO_DEPLOYMENT_BACKUP_DIR}
     fi
 
-   rsync -a ${ODO_S2I_DEPLOYMENT_DIR}/. ${ODO_DEPLOYMENT_BACKUP_DIR}/
+   rsync -aO ${ODO_S2I_DEPLOYMENT_DIR}/. ${ODO_DEPLOYMENT_BACKUP_DIR}/
 fi
 ####
 
