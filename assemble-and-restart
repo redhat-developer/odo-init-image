@@ -2,6 +2,8 @@
 set -x
 set -eo pipefail
 
+sed -i -- 's/autostart=false/autostart=true/g' /var/lib/supervisord/conf/supervisor.conf
+
 # If WorkingDir is injected as an env from odo and destination path is not equal to WorkingDir(if not copying directly to working dir) and deployment dir is not working dir
 if [ ! -z "${ODO_S2I_WORKING_DIR}" ] && [ "${ODO_S2I_SRC_BIN_PATH}" != "${ODO_S2I_WORKING_DIR}" ]; then
 

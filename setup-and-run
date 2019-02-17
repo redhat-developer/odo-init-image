@@ -1,9 +1,0 @@
-#!/bin/bash
-set -x
-set -eo pipefail
-
-echo "Setting up"
-/var/lib/supervisord/bin/s2i-setup
-
-echo "Running"
-/var/lib/supervisord/bin/run
