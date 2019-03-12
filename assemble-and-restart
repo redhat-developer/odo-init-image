@@ -3,7 +3,7 @@ set -x
 set -eo pipefail
 
 # If WorkingDir is injected as an env from odo and destination path is not equal to WorkingDir(if not copying directly to working dir) and deployment dir is not working dir
-if [ ! -z "${ODO_S2I_WORKING_DIR}" ] && ([ "${ODO_S2I_SRC_BIN_PATH}" != "${ODO_S2I_WORKING_DIR}" ] && [ "${ODO_S2I_DEPLOYMENT_DIR}" != "${ODO_S2I_WORKING_DIR}" ]); then
+if [ ! -z "${ODO_S2I_WORKING_DIR}" ] && [ "${ODO_S2I_SRC_BIN_PATH}" != "${ODO_S2I_WORKING_DIR}" ]; then
 
     # If ODO_SRC_BACKUP_DIR is injected by odo
     if [ -n  "$ODO_SRC_BACKUP_DIR" ]; then
