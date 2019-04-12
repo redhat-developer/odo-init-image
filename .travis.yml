@@ -15,7 +15,7 @@ jobs:
         - ./scripts/testing.sh
         - ./scripts/oc-cluster.sh
         - oc login -u developer
-        - cd $GOPATH/src/github.com/redhat-developer/odo
+        - cd $GOPATH/src/github.com/openshift/odo
         - make bin
         - sudo cp odo /usr/bin/odo
         - make test-main-e2e
@@ -27,7 +27,7 @@ jobs:
         - ./scripts/testing.sh
         - ./scripts/oc-cluster.sh
         - oc login -u developer
-        - cd $GOPATH/src/github.com/redhat-developer/odo
+        - cd $GOPATH/src/github.com/openshift/odo
         - make bin
         - sudo cp odo /usr/bin/odo
         - travis_wait make test-cmp-e2e
@@ -39,7 +39,7 @@ jobs:
         - ./scripts/testing.sh
         - ./scripts/oc-cluster.sh
         - oc login -u developer
-        - cd $GOPATH/src/github.com/redhat-developer/odo
+        - cd $GOPATH/src/github.com/openshift/odo
         - make bin
         - sudo cp odo /usr/bin/odo
         - make test-java-e2e
@@ -51,7 +51,7 @@ jobs:
         - ./scripts/testing.sh
         - ./scripts/oc-cluster.sh
         - oc login -u developer
-        - cd $GOPATH/src/github.com/redhat-developer/odo
+        - cd $GOPATH/src/github.com/openshift/odo
         - make bin
         - sudo cp odo /usr/bin/odo
         - make test-source-e2e
@@ -63,7 +63,7 @@ jobs:
         - ./scripts/testing.sh
         - ./scripts/oc-cluster.sh service-catalog
         - oc login -u developer
-        - cd $GOPATH/src/github.com/redhat-developer/odo
+        - cd $GOPATH/src/github.com/openshift/odo
         - make bin
         - sudo cp odo /usr/bin/odo
         - make test-service-e2e
