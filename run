@@ -5,7 +5,7 @@ set -eo pipefail
 ###
 # Check "ODO_S2I_DEPLOYMENT_DIR" environment variable and if it's present,
 # copy content from ${ODO_DEPLOYMENT_BACKUP_DIR} directory to "ODO_S2I_DEPLOYMENT_DIR"
-# Ref: https://github.com/redhat-developer/odo/issues/445
+# Ref: https://github.com/openshift/odo/issues/445
 if [ -d ${ODO_DEPLOYMENT_BACKUP_DIR} ] && [ -n "$ODO_S2I_DEPLOYMENT_DIR" ]; then
     rsync -rlO ${ODO_DEPLOYMENT_BACKUP_DIR}/. ${ODO_S2I_DEPLOYMENT_DIR}/
 fi
