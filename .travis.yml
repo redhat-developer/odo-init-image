@@ -1,69 +1,46 @@
-dist: xenial
+dist: trusty
 sudo: required
 services: 
   - docker
 
-language: bash
+language: go
 
 jobs:
   include:
-
-    # Run main e2e tests
     - stage: test
-      name: "Main e2e tests"
+      name: "Run odo e2e tests"
       script:
         - ./scripts/testing.sh
+        - cd $GOPATH/src/github.com/openshift/odo
         - ./scripts/oc-cluster.sh
+        - oc login -u system:admin
+        - oc --request-timeout 5m import-image java --namespace=openshift --from=registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:1.5 --confirm
+        - oc annotate istag/java:latest --namespace openshift tags=builder --overwrite
         - oc login -u developer
-        - cd $GOPATH/src/github.com/redhat-developer/odo
         - make bin
         - sudo cp odo /usr/bin/odo
-        - make test-main-e2e
-
-    # Run component e2e tests
+        - travis_wait make test-e2e-scenarios
+    # Run a few odo integration tests
     - stage: test
-      name: "Component e2e tests"
+      name: "Run odo integration tests (generic, component, java)"
       script:
         - ./scripts/testing.sh
+        - cd $GOPATH/src/github.com/openshift/odo
         - ./scripts/oc-cluster.sh
         - oc login -u developer
-        - cd $GOPATH/src/github.com/redhat-developer/odo
         - make bin
         - sudo cp odo /usr/bin/odo
+        - travis_wait make test-generic
         - travis_wait make test-cmp-e2e
-
-    # Run java e2e tests
     - stage: test
-      name: "Java e2e tests"
+      name: "Run odo integration tests (source, watch)"
       script:
         - ./scripts/testing.sh
+        - cd $GOPATH/src/github.com/openshift/odo
         - ./scripts/oc-cluster.sh
         - oc login -u developer
-        - cd $GOPATH/src/github.com/redhat-developer/odo
         - make bin
         - sudo cp odo /usr/bin/odo
-        - make test-java-e2e
-
-    # Run source e2e tests
-    - stage: test
-      name: "Source e2e tests"
-      script:
-        - ./scripts/testing.sh
-        - ./scripts/oc-cluster.sh
-        - oc login -u developer
-        - cd $GOPATH/src/github.com/redhat-developer/odo
-        - make bin
-        - sudo cp odo /usr/bin/odo
-        - make test-source-e2e
-
-    # Run service-catalog e2e tests
-    - stage: test
-      name: "Service-Catalog e2e tests"
-      script:
-        - ./scripts/testing.sh
-        - ./scripts/oc-cluster.sh service-catalog
-        - oc login -u developer
-        - cd $GOPATH/src/github.com/redhat-developer/odo
-        - make bin
-        - sudo cp odo /usr/bin/odo
-        - make test-service-e2e
+        - travis_wait make test-java-e2e
+        - travis_wait make test-source-e2e
+        - travis_wait make test-watch-e2e
