@@ -17,6 +17,7 @@ jobs:
         - oc --request-timeout 5m import-image java --namespace=openshift --from=registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:1.5 --confirm
         - oc annotate istag/java:latest --namespace openshift tags=builder --overwrite
         - oc login -u developer
+        - make goget-tools
         - make bin
         - sudo cp odo /usr/bin/odo
         - travis_wait make test-e2e-scenarios
@@ -28,6 +29,7 @@ jobs:
         - cd $GOPATH/src/github.com/openshift/odo
         - ./scripts/oc-cluster.sh
         - oc login -u developer
+        - make goget-tools
         - make bin
         - sudo cp odo /usr/bin/odo
         - travis_wait make test-generic
@@ -39,6 +41,7 @@ jobs:
         - cd $GOPATH/src/github.com/openshift/odo
         - ./scripts/oc-cluster.sh
         - oc login -u developer
+        - make goget-tools
         - make bin
         - sudo cp odo /usr/bin/odo
         - travis_wait make test-java-e2e
