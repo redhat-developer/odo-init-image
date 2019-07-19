@@ -2,12 +2,20 @@
 # This is an "initContainer" image used by odo to inject required tools for odo to work properly.
 #
 
-# Build SupervisordD
-FROM registry.svc.ci.openshift.org/openshift/release:golang-1.11 AS supervisordbuilder
-WORKDIR /go/src/github.com/ochinchina/supervisord
+# Build Go stuff (SupervisorD and getlanguage)
+
+FROM registry.svc.ci.openshift.org/openshift/release:golang-1.11 AS gobuilder
+
 RUN mkdir -p /go/src/github.com/ochinchina/supervisord
-COPY vendor/supervisord /go/src/github.com/ochinchina/supervisord
+ADD vendor/supervisord /go/src/github.com/ochinchina/supervisord
+WORKDIR /go/src/github.com/ochinchina/supervisord
 RUN go build -o /tmp/supervisord
+
+RUN mkdir -p /go/src/github.com/openshift/odo-supervisord-image
+ADD get-language /go/src/github.com/openshift/odo-supervisord-image/get-language/
+WORKDIR /go/src/github.com/openshift/odo-supervisord-image/get-language
+RUN go build -o /tmp/getlanguage  getlanguage.go
+
 
 # Build dumb-init
 FROM registry.access.redhat.com/ubi7/ubi AS dumbinitbuilder
@@ -31,16 +39,17 @@ RUN chmod +x ${ODO_TOOLS_DIR}/bin/dumb-init
 # SupervisorD
 RUN mkdir -p ${ODO_TOOLS_DIR}/conf ${ODO_TOOLS_DIR}/bin
 COPY supervisor.conf ${ODO_TOOLS_DIR}/conf/
-COPY --from=supervisordbuilder /tmp/supervisord ${ODO_TOOLS_DIR}/bin/supervisord
+COPY --from=gobuilder /tmp/supervisord ${ODO_TOOLS_DIR}/bin/supervisord
 
-# wrapper scrips
+# Wrapper scripts
 COPY assemble-and-restart ${ODO_TOOLS_DIR}/bin
 COPY run ${ODO_TOOLS_DIR}/bin
 COPY s2i-setup ${ODO_TOOLS_DIR}/bin
 COPY setup-and-run ${ODO_TOOLS_DIR}/bin
 COPY vendor/fix-permissions  /usr/bin/fix-permissions
+COPY --from=gobuilder /tmp/supervisord ${SUPERVISORD_DIR}/bin/supervisord
+COPY language-scripts ${SUPERVISORD_DIR}/language-scripts/
 
 RUN chgrp -R 0 ${ODO_TOOLS_DIR}  && \
     chmod -R g+rwX ${ODO_TOOLS_DIR} && \
-    chmod -R 666 ${ODO_TOOLS_DIR}/conf/* && \
-    chmod 775 ${ODO_TOOLS_DIR}/bin/supervisord
+    chmod -R 666 ${ODO_TOOLS_DIR}/conf/* 

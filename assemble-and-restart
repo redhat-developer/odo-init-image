@@ -2,6 +2,18 @@
 set -x
 set -eo pipefail
 
+export ODO_UTILS_DIR=/opt/odo
+export ODO_IMAGE_MAPPINGS_FILE=${ODO_UTILS_DIR}/language-scripts/image-mappings.json
+
+IMAGE_LANG=`${ODO_UTILS_DIR}/bin/getlanguage`
+
+if [ ! -z "${IMAGE_LANG}" ]; then
+    ${ODO_UTILS_DIR}/language-scripts/${IMAGE_LANG}/dev-assemble
+    ${ODO_UTILS_DIR}/bin/supervisord ctl stop run; ${ODO_UTILS_DIR}/bin/supervisord ctl start run
+    exit
+fi
+
+
 # If WorkingDir is injected as an env from odo and destination path is not equal to WorkingDir(if not copying directly to working dir) and deployment dir is not working dir
 if [ ! -z "${ODO_S2I_WORKING_DIR}" ] && [ "${ODO_S2I_SRC_BIN_PATH}" != "${ODO_S2I_WORKING_DIR}" ]; then
 
@@ -66,5 +78,5 @@ fi
 
 
 # Restart supervisord in order to actualy run the application
-# This is a dumb way to start as supervisord does not have a restart function
-/opt/odo/bin/supervisord ctl stop run; /opt/odo/bin/supervisord ctl start run
+# This is a dumb way to restart as supervisord does not have a restart function
+${ODO_UTILS_DIR}/bin/supervisord ctl stop run; ${ODO_UTILS_DIR}/bin/supervisord ctl start run

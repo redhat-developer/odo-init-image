@@ -1,0 +1,18 @@
+[
+    {
+        "language": "java",
+        "images": [
+            "redhat-openjdk-18/openjdk18-openshift",
+            "openjdk/openjdk-11-rhel8",
+            "openjdk/openjdk-11-rhel7"
+        ]
+    },
+    {
+        "language": "nodejs",
+        "images": [
+            "rhscl/nodejs-8-rhel7",
+            "rhoar-nodejs/nodejs-8",
+            "rhoar-nodejs/nodejs-10"
+        ]
+    }
+]

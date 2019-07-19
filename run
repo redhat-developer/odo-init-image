@@ -2,6 +2,23 @@
 set -x
 set -eo pipefail
 
+export ODO_SUPERVISORD_DIR=/var/lib/supervisord/
+export ODO_IMAGE_MAPPINGS_FILE=${ODO_SUPERVISORD_DIR}/language-scripts/image-mappings.json
+
+IMAGE_LANG=`${ODO_SUPERVISORD_DIR}/bin/getlanguage`
+
+if [ ! -z "${IMAGE_LANG}" ]; then
+    exec ${ODO_SUPERVISORD_DIR}/language-scripts/${IMAGE_LANG}/dev-run
+fi
+
+###
+# Check "ODO_S2I_DEPLOYMENT_DIR" environment variable and if it's present,
+# copy content from ${ODO_DEPLOYMENT_BACKUP_DIR} directory to "ODO_S2I_DEPLOYMENT_DIR"
+# Ref: https://github.com/openshift/odo/issues/445
+if [ -d ${ODO_DEPLOYMENT_BACKUP_DIR} ] && [ -n "$ODO_S2I_DEPLOYMENT_DIR" ]; then
+    rsync -rlO ${ODO_DEPLOYMENT_BACKUP_DIR}/. ${ODO_S2I_DEPLOYMENT_DIR}/
+fi
+###
 
 # We now run the run script. If there is a custom one written in the
 # source files, we use that instead.

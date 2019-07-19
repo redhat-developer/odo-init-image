@@ -1,0 +1,3 @@
+#!/bin/bash
+
+echo "nodejs dev-run"
