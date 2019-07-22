@@ -3,7 +3,7 @@
 # in order to appropriately inject the supervisord binary into the application container.
 #
 
-FROM centos:7
+FROM registry.access.redhat.com/ubi7/ubi
 
 ENV SUPERVISORD_DIR /opt/supervisord
 
