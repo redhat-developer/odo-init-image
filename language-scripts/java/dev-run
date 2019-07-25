@@ -1,3 +1,4 @@
 #!/bin/bash
 
-echo "java dev-run"
+# standard run script in s2i builder images usualy works fine
+exec /usr/local/s2i/run

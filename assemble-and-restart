@@ -10,7 +10,7 @@ IMAGE_LANG=`${ODO_UTILS_DIR}/bin/getlanguage`
 if [ ! -z "${IMAGE_LANG}" ]; then
     ${ODO_UTILS_DIR}/language-scripts/${IMAGE_LANG}/dev-assemble
     ${ODO_UTILS_DIR}/bin/supervisord ctl stop run; ${ODO_UTILS_DIR}/bin/supervisord ctl start run
-    exit
+    exit 0
 fi
 
 

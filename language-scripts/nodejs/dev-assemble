@@ -1,3 +1,77 @@
 #!/bin/bash
+set -e
+set -x
 
-echo "nodejs dev-assemble"
+cd /tmp/src
+
+source /usr/libexec/s2i/env
+
+REFRESH_WORKING_DIR=/tmp/refresh/
+PACKAGE_SHA_FILE=$REFRESH_WORKING_DIR/package.json.sha1
+mkdir -p $REFRESH_WORKING_DIR
+
+
+if [ ! -z $HTTP_PROXY ]; then
+	echo "---> Setting npm http proxy to $HTTP_PROXY"
+	npm config set proxy $HTTP_PROXY
+fi
+
+if [ ! -z $http_proxy ]; then
+	echo "---> Setting npm http proxy to $http_proxy"
+	npm config set proxy $http_proxy
+fi
+
+if [ ! -z $HTTPS_PROXY ]; then
+	echo "---> Setting npm https proxy to $HTTPS_PROXY"
+	npm config set https-proxy $HTTPS_PROXY
+fi
+
+if [ ! -z $https_proxy ]; then
+	echo "---> Setting npm https proxy to $https_proxy"
+	npm config set https-proxy $https_proxy
+fi
+
+if [ ! -z $NO_PROXY ]; then
+	echo "---> Setting npm no proxy config to $NO_PROXY"
+	npm config set no-proxy $NO_PROXY
+fi
+
+if [ ! -z $no_proxy ]; then
+	echo "---> Setting npm no proxy config to $no_proxy"
+	npm config set no-proxy $no_proxy
+fi
+
+# Change the npm registry mirror if provided
+if [ ! -z "$NPM_MIRROR" ]; then
+	echo "---> Setting the npm package mirror to $NPM_MIRROR"
+	npm config set registry $NPM_MIRROR
+fi
+
+echo "---> Building your Node application from source"
+
+
+# don't do anything if package.json is the same as the last time this script run
+if [ -f $PACKAGE_SHA_FILE ]; then
+    out=$(sha1sum -c $PACKAGE_SHA_FILE || true)
+    if [ "$out" == "package.json: OK" ]; then
+        echo "---> package.json is the same as last time, no changes needed."
+        exit 0
+    fi
+fi
+
+echo "---> package.json modified"
+sha1sum package.json > $PACKAGE_SHA_FILE
+
+
+if [ ! -z "$YARN_ENABLED" ]; then
+	echo "---> Using 'yarn install' with YARN_ARGS"
+	npx yarn install $YARN_ARGS
+else
+	echo "---> Installing dependencies"
+    echo "---> Using 'npm install'"
+    npm install
+
+    #do not fail when there is no build script
+    echo "---> Building in development mode"
+    npm run build --if-present
+fi

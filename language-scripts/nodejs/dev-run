@@ -1,3 +1,22 @@
 #!/bin/bash
+set -e
+set -x
 
-echo "nodejs dev-run"
+cd /tmp/src
+
+source /usr/libexec/s2i/env
+
+NPM_RUN="${NPM_RUN:=start}"
+
+export GIT_COMMITTER_NAME="unknown"
+export and GIT_COMMITTER_EMAIL="unknown@localhost.com"
+git --version
+
+echo -e "Using Node.js version: $(node --version)"
+echo -e "Environment:"
+echo -e "  NODE_ENV=${NODE_ENV}"
+echo -e "Running as user $(id)"
+
+echo "Launching via npm..."
+exec npm run ${NPM_RUN}
+
