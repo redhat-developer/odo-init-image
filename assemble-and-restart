@@ -58,25 +58,12 @@ else
     /usr/libexec/s2i/assemble
 fi
 
-# After assemble script is run(which delets sources from destination dir by doing mv of them to the WorkingDir) and if only its component created from source,
+# After assemble script is run(which deletes sources from destination dir by doing mv of them to the WorkingDir) and if only its component created from source,
 # copy back the sources from Source backup dir to DestinationDir for subsequent push of only updates by watch
 if [ ! -z "${ODO_S2I_WORKING_DIR}" ] && [ -n  "$ODO_SRC_BACKUP_DIR" ] && ([ "${ODO_S2I_SRC_BIN_PATH}" != "${ODO_S2I_WORKING_DIR}" ] && [ "${ODO_S2I_DEPLOYMENT_DIR}" != "${ODO_S2I_WORKING_DIR}" ]); then
     rsync -rlO ${ODO_SRC_BACKUP_DIR}/src/. ${ODO_S2I_SRC_BIN_PATH}/src/
 fi
 
-### 
-# Check "ODO_S2I_DEPLOYMENT_DIR" environment variable and if it's present,
-# copy content of directory to ${ODO_DEPLOYMENT_BACKUP_DIR} directory
-# Ref: https://github.com/openshift/odo/issues/445
-if [ -n "$ODO_S2I_DEPLOYMENT_DIR" ]; then
-
-    if [ ! -d "${ODO_DEPLOYMENT_BACKUP_DIR}" ]; then
-        mkdir -p ${ODO_DEPLOYMENT_BACKUP_DIR}
-    fi
-
-   rsync -rlO ${ODO_S2I_DEPLOYMENT_DIR}/. ${ODO_DEPLOYMENT_BACKUP_DIR}/
-fi
-####
 
 # Restart supervisord in order to actualy run the application
 # This is a dumb way to start as supervisord does not have a restart function
