@@ -21,6 +21,7 @@ download_tar() {
     DWN=$1
     TGT=$2
     NM=$3
+    rm -rf $TGT/*
     pushd $TGT
     curl -sL $DWN | tar xzv
     mv -f $NM/* $TGT
@@ -38,12 +39,22 @@ update_dumb_init() {
 
 update_supervisord() {
     echo "Downloading supervisord src"
+    SUPERVISORD_MOD_NAME="github.com/ochinchina/supervisord"
     SUPERVISORD_TARGET="${REQUIREMENTS_DIR}/supervisord";
-    SUPERVISORD_DOWNLOAD="https://github.com/ochinchina/supervisord/archive/${VSUPERVISORD_VERSION}.tar.gz"
+    SUPERVISORD_DOWNLOAD="https://${SUPERVISORD_MOD_NAME}/archive/${VSUPERVISORD_VERSION}.tar.gz"
     SUPERVISORD_NM="supervisord-${SUPERVISORD_VERSION}"
     download_tar $SUPERVISORD_DOWNLOAD $SUPERVISORD_TARGET $SUPERVISORD_NM
+    echo "Vendoring supervisord"
+    pushd $SUPERVISORD_TARGET
+    if [ ! -f "./go.mod" ]; then
+        go mod init $SUPERVISORD_MOD_NAME
+        go mod vendor
+        rm -rf go.mod go.sum
+    fi
+    popd
 }
 
+# MAIN
 update_fix_permissions
 update_dumb_init
 update_supervisord
