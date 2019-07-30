@@ -1,11 +1,13 @@
 #!/bin/bash
 
-set +e
+set +eux
 
 # Variables for version updates
-DUMBINIT_VERSION="v1.2.2"
-SUPERVISORD_VERSION="v0.5"
-
+DUMBINIT_VERSION="1.2.2"
+SUPERVISORD_VERSION="0.5"
+##
+VDUMBINIT_VERSION="v${DUMBINIT_VERSION}"
+VSUPERVISORD_VERSION="v${SUPERVISORD_VERSION}"
 REQUIREMENTS_DIR="$(pwd)/requirements"
 
 update_fix_permissions() {
@@ -15,18 +17,31 @@ update_fix_permissions() {
     chmod +x $FIX_PERMISSIONS_SCRIPT;
 }
 
+download_tar() {
+    DWN=$1
+    TGT=$2
+    NM=$3
+    pushd $TGT
+    curl -sL $DWN | tar xzv
+    mv -f $NM/* $TGT
+    rm -rf $NM
+    popd
+}
+
 update_dumb_init() {
     echo "Downloading dump init src"
-    DUMBINIT_TARGET="${REQUIREMENTS_DIR}/dumb-init/dumb-init-src.tar.gz";
-    DUMBINIT_DOWNLOAD="https://github.com/Yelp/dumb-init/archive/${DUMBINIT_VERSION}.tar.gz"
-    curl -sLo $DUMBINIT_TARGET $DUMBINIT_DOWNLOAD
+    DUMBINIT_TARGET="${REQUIREMENTS_DIR}/dumb-init";
+    DUMBINIT_DOWNLOAD="https://github.com/Yelp/dumb-init/archive/${VDUMBINIT_VERSION}.tar.gz";
+    DUMBINIT_NM="dumb-init-${DUMBINIT_VERSION}"
+    download_tar $DUMBINIT_DOWNLOAD $DUMBINIT_TARGET $DUMBINIT_NM
 }
 
 update_supervisord() {
     echo "Downloading supervisord src"
-    SUPERVISORD_TARGET="${REQUIREMENTS_DIR}/supervisord/supervisord-src.tar.gz";
-    SUPERVISORD_DOWNLOAD="https://github.com/ochinchina/supervisord/archive/${SUPERVISORD_VERSION}.tar.gz"
-    curl -sLo $SUPERVISORD_TARGET $SUPERVISORD_DOWNLOAD
+    SUPERVISORD_TARGET="${REQUIREMENTS_DIR}/supervisord";
+    SUPERVISORD_DOWNLOAD="https://github.com/ochinchina/supervisord/archive/${VSUPERVISORD_VERSION}.tar.gz"
+    SUPERVISORD_NM="supervisord-${SUPERVISORD_VERSION}"
+    download_tar $SUPERVISORD_DOWNLOAD $SUPERVISORD_TARGET $SUPERVISORD_NM
 }
 
 update_fix_permissions
