@@ -8,7 +8,7 @@ SUPERVISORD_VERSION="0.5"
 ##
 VDUMBINIT_VERSION="v${DUMBINIT_VERSION}"
 VSUPERVISORD_VERSION="v${SUPERVISORD_VERSION}"
-REQUIREMENTS_DIR="$(pwd)/requirements"
+REQUIREMENTS_DIR="$(pwd)/vendor"
 
 update_fix_permissions() {
     echo "Downloading fix permissions script"
