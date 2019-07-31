@@ -3,20 +3,47 @@
 # in order to appropriately inject the supervisord binary into the application container.
 #
 
+# SUPERVISORD
+
+FROM registry.svc.ci.openshift.org/openshift/release:golang-1.11 AS supervisordbuilder
+
+RUN mkdir -p /go/src/github.com/ochinchina/supervisord
+
+ADD vendor/supervisord /go/src/github.com/ochinchina/supervisord
+
+WORKDIR /go/src/github.com/ochinchina/supervisord
+
+RUN go build -o /tmp/supervisord
+
+# DUMB INIT
+# TODO Figure out dumb init building
+#FROM registry.access.redhat.com/ubi7/ubi AS dumbinitbuilder
+
+#ADD vendor/dumb-init/dumb-init /tmp/dumb-init-src
+
+#WORKDIR /tmp/dumb-init-src
+
+#RUN pwd && ls -lR
+
+# Actual image
+
 FROM registry.access.redhat.com/ubi7/ubi
 
 ENV SUPERVISORD_DIR /opt/supervisord
 
+#COPY --from=dumbinitbuilder /tmp/dumb-init ${SUPERVISORD_DIR}/bin/dumb-init
+
 ADD https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64 ${SUPERVISORD_DIR}/bin/dumb-init 
+
 RUN chmod +x ${SUPERVISORD_DIR}/bin/dumb-init
 
 RUN mkdir -p ${SUPERVISORD_DIR}/conf ${SUPERVISORD_DIR}/bin
 
 ADD supervisor.conf ${SUPERVISORD_DIR}/conf/
-ADD https://raw.githubusercontent.com/sclorg/s2i-base-container/master/core/root/usr/bin/fix-permissions  /usr/bin/fix-permissions
+ADD vendor/fix-permissions  /usr/bin/fix-permissions
 RUN chmod +x /usr/bin/fix-permissions
 
-ADD https://github.com/ochinchina/supervisord/releases/download/v0.5/supervisord_0.5_linux_amd64 ${SUPERVISORD_DIR}/bin/supervisord
+COPY --from=supervisordbuilder /tmp/supervisord ${SUPERVISORD_DIR}/bin/supervisord
 
 ADD assemble-and-restart ${SUPERVISORD_DIR}/bin
 # ADD assemble ${SUPERVISORD_DIR}/bin
