@@ -17,13 +17,15 @@ RUN go build -o /tmp/supervisord
 
 # DUMB INIT
 # TODO Figure out dumb init building
-#FROM registry.access.redhat.com/ubi7/ubi AS dumbinitbuilder
+FROM registry.access.redhat.com/ubi7/ubi AS dumbinitbuilder
 
-#ADD vendor/dumb-init/dumb-init /tmp/dumb-init-src
+RUN yum -y install glibc-static gcc make binutils
 
-#WORKDIR /tmp/dumb-init-src
+ADD vendor/dumb-init /tmp/dumb-init-src
 
-#RUN pwd && ls -lR
+WORKDIR /tmp/dumb-init-src
+
+RUN gcc -std=gnu99 -s -Wall -Werror -O3 -o dumb-init dumb-init.c
 
 # Actual image
 
@@ -31,9 +33,8 @@ FROM registry.access.redhat.com/ubi7/ubi
 
 ENV SUPERVISORD_DIR /opt/supervisord
 
-#COPY --from=dumbinitbuilder /tmp/dumb-init ${SUPERVISORD_DIR}/bin/dumb-init
-
-ADD https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64 ${SUPERVISORD_DIR}/bin/dumb-init 
+COPY --from=dumbinitbuilder /tmp/dumb-init-src/dumb-init ${SUPERVISORD_DIR}/bin/dumb-init
+#ADD https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64 ${SUPERVISORD_DIR}/bin/dumb-init 
 
 RUN chmod +x ${SUPERVISORD_DIR}/bin/dumb-init
 
