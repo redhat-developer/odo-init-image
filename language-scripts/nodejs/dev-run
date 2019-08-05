@@ -4,9 +4,10 @@ set -x
 
 cd /tmp/src
 
-source /usr/libexec/s2i/env
 
 NPM_RUN="${NPM_RUN:=start}"
+NODE_ENV="${NODE_ENV:=development}"
+
 
 export GIT_COMMITTER_NAME="unknown"
 export and GIT_COMMITTER_EMAIL="unknown@localhost.com"

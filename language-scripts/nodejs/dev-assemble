@@ -4,10 +4,11 @@ set -x
 
 cd /tmp/src
 
-source /usr/libexec/s2i/env
+NODE_ENV="${NODE_ENV:=development}"
 
 REFRESH_WORKING_DIR=/tmp/refresh/
 PACKAGE_SHA_FILE=$REFRESH_WORKING_DIR/package.json.sha1
+
 mkdir -p $REFRESH_WORKING_DIR
 
 
@@ -50,7 +51,7 @@ fi
 echo "---> Building your Node application from source"
 
 
-# don't do anything if package.json is the same as the last time this script run
+# don't do anything if package.json is the same as the last time this script was executed
 if [ -f $PACKAGE_SHA_FILE ]; then
     out=$(sha1sum -c $PACKAGE_SHA_FILE || true)
     if [ "$out" == "package.json: OK" ]; then
