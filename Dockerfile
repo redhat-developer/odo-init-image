@@ -18,7 +18,7 @@ RUN go build -o /tmp/supervisord
 # DUMB INIT
 FROM registry.centos.org/centos/centos:7 AS dumbinitbuilder
 
-RUN yum -y install gcc-static gcc make binutils
+RUN yum -y install glibc-static gcc make binutils
 
 ADD vendor/dumb-init /tmp/dumb-init-src
 
