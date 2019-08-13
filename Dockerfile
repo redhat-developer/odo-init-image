@@ -33,7 +33,6 @@ FROM registry.access.redhat.com/ubi7/ubi
 ENV SUPERVISORD_DIR /opt/supervisord
 
 COPY --from=dumbinitbuilder /tmp/dumb-init-src/dumb-init ${SUPERVISORD_DIR}/bin/dumb-init
-#ADD https://github.com/Yelp/dumb-init/releases/download/v1.2.2/dumb-init_1.2.2_amd64 ${SUPERVISORD_DIR}/bin/dumb-init 
 
 RUN chmod +x ${SUPERVISORD_DIR}/bin/dumb-init
 
