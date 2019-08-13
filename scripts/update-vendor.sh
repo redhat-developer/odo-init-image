@@ -18,34 +18,34 @@ update_fix_permissions() {
 }
 
 download_tar() {
-    DWN=$1
-    TGT=$2
-    NM=$3
-    rm -rf $TGT/*
-    pushd $TGT
-    curl -sL $DWN | tar xzv
-    mv -f $NM/* $TGT
-    rm -rf $NM
+    DOWNLOAD_URL=$1
+    DOWNLOAD_TO=$2
+    TARBALL_NAME=$3
+    rm -rf $DOWNLOAD_TO/*
+    pushd $DOWNLOAD_TO
+    curl -sL $DOWNLOAD_URL | tar xzv
+    mv -f $TARBALL_NAME/* $DOWNLOAD_TO
+    rm -rf $TARBALL_NAME
     popd
 }
 
 update_dumb_init() {
     echo "Downloading dump init src"
-    DUMBINIT_TARGET="${REQUIREMENTS_DIR}/dumb-init";
+    DUMBINIT_DOWNLOAD_TARGET="${REQUIREMENTS_DIR}/dumb-init";
     DUMBINIT_DOWNLOAD="https://github.com/Yelp/dumb-init/archive/${VDUMBINIT_VERSION}.tar.gz";
-    DUMBINIT_NM="dumb-init-${DUMBINIT_VERSION}"
-    download_tar $DUMBINIT_DOWNLOAD $DUMBINIT_TARGET $DUMBINIT_NM
+    DUMBINIT_TARBALL_NAME="dumb-init-${DUMBINIT_VERSION}"
+    download_tar $DUMBINIT_DOWNLOAD $DUMBINIT_DOWNLOAD_TARGET $DUMBINIT_TARBALL_NAME
 }
 
 update_supervisord() {
     echo "Downloading supervisord src"
     SUPERVISORD_MOD_NAME="github.com/ochinchina/supervisord"
-    SUPERVISORD_TARGET="${REQUIREMENTS_DIR}/supervisord";
+    SUPERVISORD_DOWNLOAD_TARGET="${REQUIREMENTS_DIR}/supervisord";
     SUPERVISORD_DOWNLOAD="https://${SUPERVISORD_MOD_NAME}/archive/${VSUPERVISORD_VERSION}.tar.gz"
-    SUPERVISORD_NM="supervisord-${SUPERVISORD_VERSION}"
-    download_tar $SUPERVISORD_DOWNLOAD $SUPERVISORD_TARGET $SUPERVISORD_NM
+    SUPERVISORD_TARBALL_NAME="supervisord-${SUPERVISORD_VERSION}"
+    download_tar $SUPERVISORD_DOWNLOAD $SUPERVISORD_DOWNLOAD_TARGET $SUPERVISORD_TARBALL_NAEM
     echo "Vendoring supervisord"
-    pushd $SUPERVISORD_TARGET
+    pushd $SUPERVISORD_DOWNLOAD_TARGET
     if [ ! -f "./go.mod" ]; then
         go mod init $SUPERVISORD_MOD_NAME
         go mod vendor
