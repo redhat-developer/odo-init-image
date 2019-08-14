@@ -16,15 +16,15 @@ WORKDIR /go/src/github.com/ochinchina/supervisord
 RUN go build -o /tmp/supervisord
 
 # DUMB INIT
-FROM registry.centos.org/centos/centos:7 AS dumbinitbuilder
+FROM registry.access.redhat.com/ubi7/ubi AS dumbinitbuilder
 
-RUN yum -y install glibc-static gcc make binutils
+RUN yum -y install gcc make binutils
 
 ADD vendor/dumb-init /tmp/dumb-init-src
 
 WORKDIR /tmp/dumb-init-src
 
-RUN gcc -static -std=gnu99 -s -Wall -Werror -O3 -o dumb-init dumb-init.c
+RUN gcc -std=gnu99 -s -Wall -Werror -O3 -o dumb-init dumb-init.c
 
 # Actual image
 
