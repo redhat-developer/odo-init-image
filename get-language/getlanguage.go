@@ -8,12 +8,20 @@ import (
 	"os"
 )
 
+// imageMappingsFileEnv is env variable that points to image-mappings.json file
+const imageMappingsFileEnv string = "ODO_IMAGE_MAPPINGS_FILE"
+
+// builderImageNameEnv in env variable with name of the image ("name" label on the image)
+const builderImageNameEnv string = "ODO_S2I_BUILDER_IMG"
+
 // Lang stores list of image names associated to language
 type Lang struct {
 	Language string
 	Images   []string
 }
 
+// ImageMappings hold mappings of language to image name
+// the structure represents image-mappings.json file
 type ImageMappings []Lang
 
 // GetLanguage returns language name name for associated to imageName
@@ -31,10 +39,10 @@ func (im ImageMappings) GetLanguage(imageName string) string {
 func main() {
 	// json file where all the mappings of language to image name is stored
 	// see ImageMappings for json structure
-	imageMappingFile := os.Getenv("ODO_IMAGE_MAPPINGS_FILE")
+	imageMappingFile := os.Getenv(imageMappingsFileEnv)
 
 	// name of the current image, we will try to find what language this is based on ImageMappings
-	imageName := os.Getenv("ODO_S2I_BUILDER_IMG")
+	imageName := os.Getenv(builderImageNameEnv)
 
 	var imageMappings ImageMappings
 
