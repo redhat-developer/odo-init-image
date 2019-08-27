@@ -20,6 +20,8 @@ RUN gcc -std=gnu99 -s -Wall -Werror -O3 -o dumb-init dumb-init.c
 # Final image
 FROM registry.access.redhat.com/ubi7/ubi
 
+LABEL com.redhat.component=atomic-openshift-odo-init-image
+
 ENV ODO_TOOLS_DIR /opt/odo-init/
 
 # dumb-init
