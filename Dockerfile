@@ -1,57 +1,46 @@
 #
-# This is an "initContainer" image using the base "source-to-image" OpenShift template
-# in order to appropriately inject the supervisord binary into the application container.
+# This is an "initContainer" image used by odo to inject required tools for odo to work properly.
 #
 
-# SUPERVISORD
-
+# Build SupervisordD
 FROM registry.svc.ci.openshift.org/openshift/release:golang-1.11 AS supervisordbuilder
-
-RUN mkdir -p /go/src/github.com/ochinchina/supervisord
-
-ADD vendor/supervisord /go/src/github.com/ochinchina/supervisord
-
 WORKDIR /go/src/github.com/ochinchina/supervisord
-
+RUN mkdir -p /go/src/github.com/ochinchina/supervisord
+COPY vendor/supervisord /go/src/github.com/ochinchina/supervisord
 RUN go build -o /tmp/supervisord
 
-# DUMB INIT
+# Build dumb-init
 FROM registry.access.redhat.com/ubi7/ubi AS dumbinitbuilder
-
-RUN yum -y install gcc make binutils
-
-ADD vendor/dumb-init /tmp/dumb-init-src
-
 WORKDIR /tmp/dumb-init-src
-
+RUN yum -y install gcc make binutils
+COPY vendor/dumb-init /tmp/dumb-init-src
 RUN gcc -std=gnu99 -s -Wall -Werror -O3 -o dumb-init dumb-init.c
 
-# Actual image
 
+# Final image
 FROM registry.access.redhat.com/ubi7/ubi
 
-ENV SUPERVISORD_DIR /opt/supervisord
+LABEL com.redhat.component=atomic-openshift-odo-init-image
 
-COPY --from=dumbinitbuilder /tmp/dumb-init-src/dumb-init ${SUPERVISORD_DIR}/bin/dumb-init
+ENV ODO_TOOLS_DIR /opt/odo-init/
 
-RUN chmod +x ${SUPERVISORD_DIR}/bin/dumb-init
+# dumb-init
+COPY --from=dumbinitbuilder /tmp/dumb-init-src/dumb-init ${ODO_TOOLS_DIR}/bin/dumb-init
+RUN chmod +x ${ODO_TOOLS_DIR}/bin/dumb-init
 
-RUN mkdir -p ${SUPERVISORD_DIR}/conf ${SUPERVISORD_DIR}/bin
+# SupervisorD
+RUN mkdir -p ${ODO_TOOLS_DIR}/conf ${ODO_TOOLS_DIR}/bin
+COPY supervisor.conf ${ODO_TOOLS_DIR}/conf/
+COPY --from=supervisordbuilder /tmp/supervisord ${ODO_TOOLS_DIR}/bin/supervisord
 
-ADD supervisor.conf ${SUPERVISORD_DIR}/conf/
-ADD vendor/fix-permissions  /usr/bin/fix-permissions
-RUN chmod +x /usr/bin/fix-permissions
+# wrapper scrips
+COPY assemble-and-restart ${ODO_TOOLS_DIR}/bin
+COPY run ${ODO_TOOLS_DIR}/bin
+COPY s2i-setup ${ODO_TOOLS_DIR}/bin
+COPY setup-and-run ${ODO_TOOLS_DIR}/bin
+COPY vendor/fix-permissions  /usr/bin/fix-permissions
 
-COPY --from=supervisordbuilder /tmp/supervisord ${SUPERVISORD_DIR}/bin/supervisord
-
-ADD assemble-and-restart ${SUPERVISORD_DIR}/bin
-# ADD assemble ${SUPERVISORD_DIR}/bin
-# RUN ${SUPERVISORD_DIR}/bin/assemble
-ADD run ${SUPERVISORD_DIR}/bin
-ADD s2i-setup ${SUPERVISORD_DIR}/bin
-ADD setup-and-run ${SUPERVISORD_DIR}/bin
-
-RUN chgrp -R 0 ${SUPERVISORD_DIR}  && \
-    chmod -R g+rwX ${SUPERVISORD_DIR} && \
-    chmod -R 666 ${SUPERVISORD_DIR}/conf/* && \
-    chmod 775 ${SUPERVISORD_DIR}/bin/supervisord
+RUN chgrp -R 0 ${ODO_TOOLS_DIR}  && \
+    chmod -R g+rwX ${ODO_TOOLS_DIR} && \
+    chmod -R 666 ${ODO_TOOLS_DIR}/conf/* && \
+    chmod 775 ${ODO_TOOLS_DIR}/bin/supervisord
