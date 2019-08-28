@@ -47,8 +47,9 @@ COPY run ${ODO_TOOLS_DIR}/bin
 COPY s2i-setup ${ODO_TOOLS_DIR}/bin
 COPY setup-and-run ${ODO_TOOLS_DIR}/bin
 COPY vendor/fix-permissions  /usr/bin/fix-permissions
-COPY --from=gobuilder /tmp/supervisord ${SUPERVISORD_DIR}/bin/supervisord
-COPY language-scripts ${SUPERVISORD_DIR}/language-scripts/
+
+COPY language-scripts ${ODO_TOOLS_DIR}/language-scripts/
+COPY --from=gobuilder /tmp/getlanguage ${ODO_TOOLS_DIR}/bin/getlanguage
 
 RUN chgrp -R 0 ${ODO_TOOLS_DIR}  && \
     chmod -R g+rwX ${ODO_TOOLS_DIR} && \
