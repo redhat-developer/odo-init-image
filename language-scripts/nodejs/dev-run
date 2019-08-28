@@ -23,10 +23,10 @@ echo -e "Running as user $(id)"
 
 echo "Launching via npm..."
 
-# TODO: if users app doesn't have nodemon as a dev dependency it will take a long time to start it via npx
 if [ $DEBUG_MODE == "false" ]; then
     exec npm run -d start
 else
+    # TODO: if users app doesn't have nodemon as a dev dependency it will take a long time to start it via npx
     exec npx nodemon --inspect=$DEBUG_PORT
 fi
 
