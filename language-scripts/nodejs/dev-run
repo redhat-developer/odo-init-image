@@ -1,0 +1,32 @@
+#!/bin/bash
+set -e
+set -x
+
+cd /tmp/src
+
+NODE_ENV="${NODE_ENV:=development}"
+DEBUG_PORT="${DEBUG_PORT:=9229}"
+
+# DEBUG_MODE is true by defualt, which means that the application will be started with remote debugging enabled.
+DEBUG_MODE="${DEBUG_MODE:=true}"
+
+export GIT_COMMITTER_NAME="unknown"
+export and GIT_COMMITTER_EMAIL="unknown@localhost"
+git --version
+
+echo -e "Using Node.js version: $(node --version)"
+echo -e "Environment:"
+echo -e "  NODE_ENV=${NODE_ENV}"
+echo -e "  DEBUG_PORT=${DEBUG_PORT}"
+echo -e "  DEBUG_MODE=${DEBUG_MODE}"
+echo -e "Running as user $(id)"
+
+echo "Launching via npm..."
+
+if [ $DEBUG_MODE == "false" ]; then
+    exec npm run -d start
+else
+    # TODO: if users app doesn't have nodemon as a dev dependency it will take a long time to start it via npx
+    exec npx nodemon --inspect=$DEBUG_PORT
+fi
+

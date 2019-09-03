@@ -2,6 +2,15 @@
 set -x
 set -eo pipefail
 
+export ODO_UTILS_DIR=/opt/odo
+
+export ODO_IMAGE_MAPPINGS_FILE=${ODO_UTILS_DIR}/language-scripts/image-mappings.json
+
+IMAGE_LANG=`${ODO_UTILS_DIR}/bin/getlanguage`
+
+if [ ! -z "${IMAGE_LANG}" ]; then
+    exec ${ODO_UTILS_DIR}/language-scripts/${IMAGE_LANG}/dev-run
+fi
 
 # We now run the run script. If there is a custom one written in the
 # source files, we use that instead.
