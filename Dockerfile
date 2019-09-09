@@ -28,7 +28,15 @@ RUN gcc -std=gnu99 -s -Wall -Werror -O3 -o dumb-init dumb-init.c
 # Final image
 FROM registry.access.redhat.com/ubi7/ubi
 
-LABEL com.redhat.component=atomic-openshift-odo-init-image
+
+LABEL com.redhat.component=atomic-openshift-odo-init-image-container \ 
+    name=openshift/odo-init-image \ 
+    io.k8s.display-name=atomic-openshift-odo-init-image \
+    maintainer=devtools-deploy@redhat.com \ 
+    summary="Odo init image is an init container used by odo to initialze a 'component'"
+
+# Change version as needed
+LABEL version=0.10.0
 
 ENV ODO_TOOLS_DIR /opt/odo-init/
 
