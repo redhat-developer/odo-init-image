@@ -8,22 +8,23 @@ language: go
 jobs:
   include:
     - stage: test
-      name: "Run odo e2e tests"
+      name: "core beta, java, source e2e tests"
       script:
         - ./scripts/testing.sh
         - cd $GOPATH/src/github.com/openshift/odo
         - ./scripts/oc-cluster.sh
-        - oc login -u system:admin
-        - oc --request-timeout 5m import-image java --namespace=openshift --from=registry.access.redhat.com/redhat-openjdk-18/openjdk18-openshift:1.5 --confirm
-        - oc annotate istag/java:latest --namespace openshift tags=builder --overwrite
         - oc login -u developer
         - make goget-tools
         - make bin
         - sudo cp odo /usr/bin/odo
-        - travis_wait make test-e2e-scenarios
+        - travis_wait make test-e2e-beta
+        - travis_wait make test-e2e-java
+        - travis_wait make test-e2e-source
+        - odo logout
+
     # Run a few odo integration tests
     - stage: test
-      name: "Run odo integration tests (generic, component, java)"
+      name: "generic, login, component command integration tests"
       script:
         - ./scripts/testing.sh
         - cd $GOPATH/src/github.com/openshift/odo
@@ -33,9 +34,12 @@ jobs:
         - make bin
         - sudo cp odo /usr/bin/odo
         - travis_wait make test-generic
-        - travis_wait make test-cmp-e2e
+        - travis_wait make test-cmd-login-logout
+        - travis_wait make test-cmd-cmp
+        - odo logout
+
     - stage: test
-      name: "Run odo integration tests (source, watch)"
+      name: "preference, config and url command integration tests"
       script:
         - ./scripts/testing.sh
         - cd $GOPATH/src/github.com/openshift/odo
@@ -44,6 +48,37 @@ jobs:
         - make goget-tools
         - make bin
         - sudo cp odo /usr/bin/odo
-        - travis_wait make test-java-e2e
-        - travis_wait make test-source-e2e
-        - travis_wait make test-watch-e2e
+        - travis_wait make test-cmd-pref-config
+        - travis_wait make test-cmd-url
+        - odo logout
+
+    - stage: test
+      name: "watch, storage, app and push command integration tests"
+      script:
+        - ./scripts/testing.sh
+        - cd $GOPATH/src/github.com/openshift/odo
+        - ./scripts/oc-cluster.sh
+        - oc login -u developer
+        - make goget-tools
+        - make bin
+        - sudo cp odo /usr/bin/odo
+        - travis_wait make test-cmd-watch
+        - travis_wait make test-cmd-storage
+        - travis_wait make test-cmd-app
+        - travis_wait make test-cmd-push
+        - odo logout
+
+    - stage: test
+      name: "service, link, component sub-commands command integration tests"
+      script:
+        - ./scripts/testing.sh
+        - cd $GOPATH/src/github.com/openshift/odo
+        - ./scripts/oc-cluster.sh service-catalog
+        - oc login -u developer
+        - make goget-tools
+        - make bin
+        - sudo cp odo /usr/bin/odo
+        - travis_wait make test-cmd-service
+        - make test-cmd-link-unlink
+        - travis_wait make test-cmd-cmp-sub
+        - odo logout
