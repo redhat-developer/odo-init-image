@@ -16,6 +16,8 @@ ADD get-language /go/src/github.com/openshift/odo-supervisord-image/get-language
 WORKDIR /go/src/github.com/openshift/odo-supervisord-image/get-language
 RUN go build -o /tmp/getlanguage  getlanguage.go
 
+ADD vendor/go-init/main.go /go/src/go-init.go
+RUN go build -o /tmp/go-init /go/src/go-init.go
 
 # Build dumb-init
 FROM registry.access.redhat.com/ubi7/ubi AS dumbinitbuilder
@@ -58,6 +60,8 @@ COPY vendor/fix-permissions  /usr/bin/fix-permissions
 
 COPY language-scripts ${ODO_TOOLS_DIR}/language-scripts/
 COPY --from=gobuilder /tmp/getlanguage ${ODO_TOOLS_DIR}/bin/getlanguage
+
+COPY --from=gobuilder /tmp/go-init ${ODO_TOOLS_DIR}/bin/go-init
 
 RUN chgrp -R 0 ${ODO_TOOLS_DIR}  && \
     chmod -R g+rwX ${ODO_TOOLS_DIR} && \
