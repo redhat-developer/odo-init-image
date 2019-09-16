@@ -16,8 +16,9 @@ ADD get-language /go/src/github.com/openshift/odo-supervisord-image/get-language
 WORKDIR /go/src/github.com/openshift/odo-supervisord-image/get-language
 RUN go build -o /tmp/getlanguage  getlanguage.go
 
-ADD go-init/main.go /go/src/go-init.go
-RUN go build -o /tmp/go-init /go/src/go-init.go
+RUN mkdir -p /go/src/github.com/pablo-ruth/go-init
+ADD go-init/main.go /go/src/github.com/pablo-ruth/go-init/go-init.go
+RUN go build -o /tmp/go-init /go/src/github.com/pablo-ruth/go-init/go-init.go
 
 # Final image
 FROM registry.access.redhat.com/ubi7/ubi
