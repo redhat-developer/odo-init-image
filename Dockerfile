@@ -16,7 +16,7 @@ ADD get-language /go/src/github.com/openshift/odo-supervisord-image/get-language
 WORKDIR /go/src/github.com/openshift/odo-supervisord-image/get-language
 RUN go build -o /tmp/getlanguage  getlanguage.go
 
-ADD vendor/go-init/main.go /go/src/go-init.go
+ADD go-init/main.go /go/src/go-init.go
 RUN go build -o /tmp/go-init /go/src/go-init.go
 
 # Build dumb-init
@@ -29,7 +29,6 @@ RUN gcc -std=gnu99 -s -Wall -Werror -O3 -o dumb-init dumb-init.c
 
 # Final image
 FROM registry.access.redhat.com/ubi7/ubi
-
 
 LABEL com.redhat.component=atomic-openshift-odo-init-image-container \ 
     name=openshift/odo-init-image \ 
