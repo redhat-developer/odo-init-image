@@ -20,12 +20,11 @@ ADD go-init/main.go /go/src/go-init.go
 RUN go build -o /tmp/go-init /go/src/go-init.go
 
 # Build dumb-init
-FROM registry.access.redhat.com/ubi7/ubi AS dumbinitbuilder
-WORKDIR /tmp/dumb-init-src
-RUN yum -y install gcc make binutils
-COPY vendor/dumb-init /tmp/dumb-init-src
-RUN gcc -std=gnu99 -s -Wall -Werror -O3 -o dumb-init dumb-init.c
-
+#FROM registry.access.redhat.com/ubi7/ubi AS dumbinitbuilder
+#WORKDIR /tmp/dumb-init-src
+#RUN yum -y install gcc make binutils
+#COPY vendor/dumb-init /tmp/dumb-init-src
+#RUN gcc -std=gnu99 -s -Wall -Werror -O3 -o dumb-init dumb-init.c
 
 # Final image
 FROM registry.access.redhat.com/ubi7/ubi
@@ -42,8 +41,8 @@ LABEL version=0.10.0
 ENV ODO_TOOLS_DIR /opt/odo-init/
 
 # dumb-init
-COPY --from=dumbinitbuilder /tmp/dumb-init-src/dumb-init ${ODO_TOOLS_DIR}/bin/dumb-init
-RUN chmod +x ${ODO_TOOLS_DIR}/bin/dumb-init
+#COPY --from=dumbinitbuilder /tmp/dumb-init-src/dumb-init ${ODO_TOOLS_DIR}/bin/dumb-init
+#RUN chmod +x ${ODO_TOOLS_DIR}/bin/dumb-init
 
 # SupervisorD
 RUN mkdir -p ${ODO_TOOLS_DIR}/conf ${ODO_TOOLS_DIR}/bin
