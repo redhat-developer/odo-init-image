@@ -2,7 +2,7 @@
 # This is an "initContainer" image used by odo to inject required tools for odo to work properly.
 #
 
-# Build Go stuff (SupervisorD and getlanguage)
+# Build Go stuff (SupervisorD, getlanguage and go-init)
 
 FROM registry.svc.ci.openshift.org/openshift/release:golang-1.11 AS gobuilder
 
@@ -16,18 +16,12 @@ ADD get-language /go/src/github.com/openshift/odo-supervisord-image/get-language
 WORKDIR /go/src/github.com/openshift/odo-supervisord-image/get-language
 RUN go build -o /tmp/getlanguage  getlanguage.go
 
-
-# Build dumb-init
-FROM registry.access.redhat.com/ubi7/ubi AS dumbinitbuilder
-WORKDIR /tmp/dumb-init-src
-RUN yum -y install gcc make binutils
-COPY vendor/dumb-init /tmp/dumb-init-src
-RUN gcc -std=gnu99 -s -Wall -Werror -O3 -o dumb-init dumb-init.c
-
+RUN mkdir -p /go/src/github.com/pablo-ruth/go-init
+ADD go-init/main.go /go/src/github.com/pablo-ruth/go-init/go-init.go
+RUN go build -o /tmp/go-init /go/src/github.com/pablo-ruth/go-init/go-init.go
 
 # Final image
 FROM registry.access.redhat.com/ubi7/ubi
-
 
 LABEL com.redhat.component=atomic-openshift-odo-init-image-container \ 
     name=openshift/odo-init-image \ 
@@ -40,10 +34,6 @@ LABEL version=0.10.0
 
 ENV ODO_TOOLS_DIR /opt/odo-init/
 
-# dumb-init
-COPY --from=dumbinitbuilder /tmp/dumb-init-src/dumb-init ${ODO_TOOLS_DIR}/bin/dumb-init
-RUN chmod +x ${ODO_TOOLS_DIR}/bin/dumb-init
-
 # SupervisorD
 RUN mkdir -p ${ODO_TOOLS_DIR}/conf ${ODO_TOOLS_DIR}/bin
 COPY supervisor.conf ${ODO_TOOLS_DIR}/conf/
@@ -55,9 +45,11 @@ COPY run ${ODO_TOOLS_DIR}/bin
 COPY s2i-setup ${ODO_TOOLS_DIR}/bin
 COPY setup-and-run ${ODO_TOOLS_DIR}/bin
 COPY vendor/fix-permissions  /usr/bin/fix-permissions
-
 COPY language-scripts ${ODO_TOOLS_DIR}/language-scripts/
+
+# Get Language and go-init
 COPY --from=gobuilder /tmp/getlanguage ${ODO_TOOLS_DIR}/bin/getlanguage
+COPY --from=gobuilder /tmp/go-init ${ODO_TOOLS_DIR}/bin/go-init
 
 RUN chgrp -R 0 ${ODO_TOOLS_DIR}  && \
     chmod -R g+rwX ${ODO_TOOLS_DIR} && \

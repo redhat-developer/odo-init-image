@@ -4,10 +4,8 @@ set +eux
 
 # Variables for version updates
 DUMBINIT_VERSION="1.2.2"
-SUPERVISORD_VERSION="0.5"
 ##
 VDUMBINIT_VERSION="v${DUMBINIT_VERSION}"
-VSUPERVISORD_VERSION="v${SUPERVISORD_VERSION}"
 REQUIREMENTS_DIR="$(pwd)/vendor"
 
 update_fix_permissions() {
@@ -29,14 +27,6 @@ download_tar() {
     popd
 }
 
-update_dumb_init() {
-    echo "Downloading dump init src"
-    DUMBINIT_DOWNLOAD_TARGET="${REQUIREMENTS_DIR}/dumb-init";
-    DUMBINIT_DOWNLOAD="https://github.com/Yelp/dumb-init/archive/${VDUMBINIT_VERSION}.tar.gz";
-    DUMBINIT_TARBALL_NAME="dumb-init-${DUMBINIT_VERSION}"
-    download_tar $DUMBINIT_DOWNLOAD $DUMBINIT_DOWNLOAD_TARGET $DUMBINIT_TARBALL_NAME
-}
-
 update_supervisord() {
     echo "Downloading supervisord src"
     SUPERVISORD_MOD_NAME="github.com/ochinchina/supervisord"
@@ -56,5 +46,4 @@ update_supervisord() {
 
 # MAIN
 update_fix_permissions
-update_dumb_init
 update_supervisord
