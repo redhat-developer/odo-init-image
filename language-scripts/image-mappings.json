@@ -4,7 +4,9 @@
         "images": [
             "rhscl/nodejs-8-rhel7",
             "rhoar-nodejs/nodejs-8",
-            "rhoar-nodejs/nodejs-10"
+            "rhoar-nodejs/nodejs-10",
+            "bucharestgold/centos7-s2i-nodejs",
+            "centos/nodejs-8-centos7"
         ]
     },
     {
