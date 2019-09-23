@@ -24,6 +24,7 @@ RUN go build -o /tmp/go-init /go/src/github.com/pablo-ruth/go-init/go-init.go
 FROM registry.access.redhat.com/ubi7/ubi
 
 LABEL com.redhat.component=atomic-openshift-odo-init-image-container \ 
+    com.redhat.license_terms=https://www.redhat.com/licenses/EULA_Red_Hat_Standard_20190722.pdf \ 
     name=openshift/odo-init-image \ 
     io.k8s.display-name=atomic-openshift-odo-init-image \
     maintainer=devtools-deploy@redhat.com \ 
