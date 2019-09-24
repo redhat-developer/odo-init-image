@@ -4,11 +4,12 @@ set -x
 
 DEBUG_PORT="${DEBUG_PORT:=49200}"
 
-# DEBUG_MODE is true by defualt, which means that the application will be started with remote debugging enabled.
+# DEBUG_MODE is true by default, which means that the application will be started with remote debugging enabled.
 DEBUG_MODE="${DEBUG_MODE:=true}"
 
 if [ $DEBUG_MODE != "false" ]; then
     export JAVA_OPTS="$JAVA_OPTS -Xdebug -Xrunjdwp:server=y,transport=dt_socket,address=${DEBUG_PORT},suspend=n"
+    export JAVA_OPTIONS=$JAVA_OPTS
 fi
 
 # run normal run s2i script
