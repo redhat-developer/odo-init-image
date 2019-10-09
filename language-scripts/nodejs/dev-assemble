@@ -1,15 +1,61 @@
 #!/bin/bash
+
 set -e
 set -x
 
-cd /tmp/src
+# DEBUG_MODE is true by default, which means that the application will be started with remote debugging enabled.
+DEBUG_MODE="${DEBUG_MODE:=true}"
 
-NODE_ENV="${NODE_ENV:=development}"
+if [ "$DEBUG_MODE" == "true" ]; then
+	export DEV_MODE=true
+fi
 
 REFRESH_WORKING_DIR=/tmp/refresh/
 PACKAGE_SHA_FILE=$REFRESH_WORKING_DIR/package.json.sha1
-
 mkdir -p $REFRESH_WORKING_DIR
+
+#from: /usr/libexec/s2i/env
+# If NODE_ENV is not set by the user, then default to production.
+# User may also set DEV_MODE=true
+if [ -z "$NODE_ENV" ]; then
+  if [ "$DEV_MODE" == true ]; then
+    export NODE_ENV=development
+  else
+    export NODE_ENV=production
+  fi
+fi
+
+# Set the environment for this build configuration to production by default.
+if [ "$NODE_ENV" == "production" ]; then
+  export DEV_MODE=false
+else
+  export DEV_MODE=true
+fi
+
+
+if [ "$DEV_MODE" == true ] ; then
+	set -x
+fi
+
+echo "---> Installing application source"
+cp -Rfp /tmp/src/. ./
+
+
+# don't do anything if package.json is the same as the last time this script was executed
+if [ "$DEV_MODE" == true  ] && [ -f $PACKAGE_SHA_FILE ]; then
+    out=$(sha1sum -c $PACKAGE_SHA_FILE || true)
+    if [ "$out" == "package.json: OK" ]; then
+        echo "---> package.json is the same as last time, no changes needed."
+		echo "---> Fix permissions on app-root"
+		fix-permissions /opt/app-root
+        exit 0
+    fi
+fi
+
+echo "---> package.json modified"
+sha1sum package.json > $PACKAGE_SHA_FILE
+
+
 
 
 if [ ! -z $HTTP_PROXY ]; then
@@ -49,19 +95,8 @@ if [ ! -z "$NPM_MIRROR" ]; then
 fi
 
 echo "---> Building your Node application from source"
-
-
-# don't do anything if package.json is the same as the last time this script was executed
-if [ -f $PACKAGE_SHA_FILE ]; then
-    out=$(sha1sum -c $PACKAGE_SHA_FILE || true)
-    if [ "$out" == "package.json: OK" ]; then
-        echo "---> package.json is the same as last time, no changes needed."
-        exit 0
-    fi
-fi
-
-echo "---> package.json modified"
-sha1sum package.json > $PACKAGE_SHA_FILE
+echo -e "Current git config"
+git config --list
 
 
 if [ ! -z "$YARN_ENABLED" ]; then
@@ -69,10 +104,37 @@ if [ ! -z "$YARN_ENABLED" ]; then
 	npx yarn install $YARN_ARGS
 else
 	echo "---> Installing dependencies"
-    echo "---> Using 'npm install'"
-    npm install
+	if [ "$DEV_MODE" == true ]; then
+		echo "---> Using 'npm install'"
+		npm install
 
-    #do not fail when there is no build script
-    echo "---> Building in development mode"
-    npm run build --if-present
+		#do not fail when there is no build script
+		echo "---> Building in development mode"
+		npm run build --if-present
+	else
+		HAS_BUILD=$(node -e "console.log(require('./package.json').scripts.build ? true : false)")
+
+		# check to see if there is a build script by inspecting the package.json
+		if [ "$HAS_BUILD" == true ]; then
+			# Do a npm install to get the dev depdencies
+			echo "---> Installing dev dependencies"
+			NODE_ENV=development npm install
+			#do not fail when there is no build script
+			echo "---> Building in production mode"
+			npm run build --if-present
+		else
+			echo "---> Using 'npm install -s --only=production'"
+			npm install -s --only=production
+		fi
+
+		#echo "---> Pruning the development dependencies"
+		#npm prune
+	fi
 fi
+
+
+#echo "---> Cleaning up npm cache"
+#rm -rf .npm
+
+echo "---> Fix permissions on app-root"
+fix-permissions /opt/app-root

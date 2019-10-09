@@ -7,13 +7,6 @@ export ODO_IMAGE_MAPPINGS_FILE=${ODO_UTILS_DIR}/language-scripts/image-mappings.
 
 IMAGE_LANG=`${ODO_UTILS_DIR}/bin/getlanguage`
 
-if [ ! -z "${IMAGE_LANG}" ]; then
-    ${ODO_UTILS_DIR}/language-scripts/${IMAGE_LANG}/dev-assemble
-    ${ODO_UTILS_DIR}/bin/supervisord ctl stop run; ${ODO_UTILS_DIR}/bin/supervisord ctl start run
-    exit 0
-fi
-
-
 # If WorkingDir is injected as an env from odo and destination path is not equal to WorkingDir(if not copying directly to working dir) and deployment dir is not working dir
 if [ ! -z "${ODO_S2I_WORKING_DIR}" ] && [ "${ODO_S2I_SRC_BIN_PATH}" != "${ODO_S2I_WORKING_DIR}" ]; then
 
@@ -63,6 +56,8 @@ fi
 # source files, we use that instead.
 if [ -f ${ODO_S2I_SRC_BIN_PATH}/src/.s2i/bin/assemble ]; then
     ${ODO_S2I_SRC_BIN_PATH}/src/.s2i/bin/assemble
+elif [ -n "${IMAGE_LANG}" ]; then
+    ${ODO_UTILS_DIR}/language-scripts/${IMAGE_LANG}/dev-assemble
 elif [ -n "${ODO_S2I_SCRIPTS_URL}" ]; then # For S2I scripts path, use the env var set by odo if not available in component source
     rm -rf /opt/app-root/src/.git # ensure we don't copy git files since they can cause problems
     ${ODO_S2I_SCRIPTS_URL}/assemble
