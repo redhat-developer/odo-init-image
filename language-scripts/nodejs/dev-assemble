@@ -49,10 +49,10 @@ cp -Rf /tmp/src/. ./
 if [ "$DEV_MODE" == true  ] && [ -f $PACKAGE_SHA_FILE ]; then
     out=$(sha1sum -c $PACKAGE_SHA_FILE || true)
     if [ "$out" == "package.json: OK" ]; then
-        echo "---> package.json is the same as last time, no changes needed."
+		echo "---> package.json is the same as last time, no changes needed."
 		echo "---> Fix permissions on app-root"
 		fix-permissions /opt/app-root
-        exit 0
+		exit 0
     fi
 fi
 
