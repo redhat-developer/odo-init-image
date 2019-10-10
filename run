@@ -8,14 +8,12 @@ export ODO_IMAGE_MAPPINGS_FILE=${ODO_UTILS_DIR}/language-scripts/image-mappings.
 
 IMAGE_LANG=`${ODO_UTILS_DIR}/bin/getlanguage`
 
-if [ ! -z "${IMAGE_LANG}" ]; then
-    exec ${ODO_UTILS_DIR}/language-scripts/${IMAGE_LANG}/dev-run
-fi
-
 # We now run the run script. If there is a custom one written in the
 # source files, we use that instead.
 if [ -f ${ODO_S2I_SRC_BIN_PATH}/.s2i/bin/run ]; then
     exec ${ODO_S2I_SRC_BIN_PATH}/.s2i/bin/run
+elif [ ! -z "${IMAGE_LANG}" ]; then
+    exec ${ODO_UTILS_DIR}/language-scripts/${IMAGE_LANG}/dev-run
 elif [ -f ${ODO_S2I_SCRIPTS_URL}/run ]; then # java s2i
     exec ${ODO_S2I_SCRIPTS_URL}/run
 else
