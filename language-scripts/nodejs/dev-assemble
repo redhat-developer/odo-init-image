@@ -38,7 +38,11 @@ if [ "$DEV_MODE" == true ] ; then
 fi
 
 echo "---> Installing application source"
-cp -Rfp /tmp/src/. ./
+# Do not run it with -p (preserving  some attributes)
+# It causes it to fail with "cp: preserving times for './.': Operation not permitted" when files come from Windows
+#cp -Rfp /tmp/src/. ./
+cp -Rf /tmp/src/. ./
+
 
 
 # don't do anything if package.json is the same as the last time this script was executed
