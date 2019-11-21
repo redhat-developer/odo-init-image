@@ -1,9 +1,0 @@
-#!/bin/bash
-set -x
-set -eo pipefail
-
-echo "Setting up"
-/opt/odo/bin/s2i-setup
-
-echo "Running"
-/opt/odo/bin/run
