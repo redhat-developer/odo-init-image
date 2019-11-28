@@ -44,7 +44,6 @@ COPY --from=gobuilder /tmp/supervisord ${ODO_TOOLS_DIR}/bin/supervisord
 COPY assemble-and-restart ${ODO_TOOLS_DIR}/bin
 COPY run ${ODO_TOOLS_DIR}/bin
 COPY s2i-setup ${ODO_TOOLS_DIR}/bin
-COPY setup-and-run ${ODO_TOOLS_DIR}/bin
 COPY vendor/fix-permissions  /usr/bin/fix-permissions
 COPY language-scripts ${ODO_TOOLS_DIR}/language-scripts/
 

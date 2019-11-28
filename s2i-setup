@@ -5,6 +5,14 @@ set -eo pipefail
 # We need to setup these directories before the actual assembly process
 # because odo copies into some of these directories before running assemble
 
+# If not present, copy supervisor.conf from EmptyDir on to persistent volume mounted on "/opt/app-root"
+# This is to persist supervisor.conf across pod restarts
+PV_MNT_PT="/opt/app-root"
+ODO_UTILS_DIR="/opt/odo"
+if [ ! -f ${PV_MNT_PT}/conf/supervisor.conf ]; then
+  cp -rp ${ODO_UTILS_DIR}/conf ${PV_MNT_PT}
+fi
+
 # source directory from other s2i images
 mkdir -p ${ODO_S2I_SRC_BIN_PATH}
 # s2i fails when /tmp/src/ is empty. Also this is needed for Java s2i
@@ -20,4 +28,4 @@ if [[ ${ODO_S2I_SRC_BIN_PATH} != *"/src"* ]];then
   touch ${ODO_S2I_SRC_BIN_PATH}/src/.dummy
 fi
 
-mkdir -p /opt/app-root/src
+mkdir -p ${PV_MNT_PT}/src

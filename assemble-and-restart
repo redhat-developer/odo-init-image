@@ -71,6 +71,9 @@ if [ ! -z "${ODO_S2I_WORKING_DIR}" ] && [ -n  "$ODO_SRC_BACKUP_DIR" ] && ([ "${O
     rsync -rlO ${ODO_SRC_BACKUP_DIR}/src/. ${ODO_S2I_SRC_BIN_PATH}/src/
 fi
 
+# Now that the assemble is successful; change autostart from false to true in supervisor.conf present on persistent volume mounted on "/opt/app-root"
+PV_MNT_PT="/opt/app-root"
+sed -i 's/autostart=false/autostart=true/g' ${PV_MNT_PT}/conf/supervisor.conf
 
 # Restart supervisord in order to actualy run the application
 # This is a dumb way to restart as supervisord does not have a restart function
