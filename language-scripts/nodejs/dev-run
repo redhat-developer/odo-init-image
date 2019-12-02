@@ -2,13 +2,8 @@
 set -e
 set -x
 
-# DEBUG_MODE is true by default, which means that the application will be started with remote debugging enabled.
-DEBUG_MODE="${DEBUG_MODE:=true}"
-
-if [ "$DEBUG_MODE" == "true" ]; then
-	export DEV_MODE=true
-fi
-
+# DEV_MODE is true by default, which means that the application will be started with remote debugging enabled.
+DEV_MODE="${DEV_MODE:=true}"
 
 #from: /usr/libexec/s2i/env
 # If NODE_ENV is not set by the user, then default to production.
