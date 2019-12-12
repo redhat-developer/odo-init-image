@@ -3,12 +3,9 @@
 set -e
 set -x
 
-# DEBUG_MODE is true by default, which means that the application will be started with remote debugging enabled.
-DEBUG_MODE="${DEBUG_MODE:=true}"
+# DEV_MODE is true by default, which means that the application will be started with remote debugging enabled.
+DEV_MODE="${DEV_MODE:=true}"
 
-if [ "$DEBUG_MODE" == "true" ]; then
-	export DEV_MODE=true
-fi
 
 REFRESH_WORKING_DIR=/tmp/refresh/
 PACKAGE_SHA_FILE=$REFRESH_WORKING_DIR/package.json.sha1
