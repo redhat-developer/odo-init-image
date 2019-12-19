@@ -31,7 +31,7 @@ LABEL com.redhat.component=atomic-openshift-odo-init-image-container \
     summary="Odo init image is an init container used by odo to initialze a 'component'"
 
 # Change version as needed
-LABEL version=1.0.1
+LABEL version=1.0.2
 
 ENV ODO_TOOLS_DIR /opt/odo-init/
 
