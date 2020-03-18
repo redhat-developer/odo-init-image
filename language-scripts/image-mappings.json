@@ -2,12 +2,12 @@
     {
         "language": "nodejs",
         "images": [
-            "rhscl/nodejs-8-rhel7",
+            "centos/nodejs-10-centos7",
+            "centos/nodejs-12-centos7",
             "rhscl/nodejs-10-rhel7",
-            "rhoar-nodejs/nodejs-8",
-            "rhoar-nodejs/nodejs-10",
+            "rhscl/nodejs-12-rhel7",
             "bucharestgold/centos7-s2i-nodejs",
-            "centos/nodejs-8-centos7"
+            "nodeshift/centos7-s2i-nodejs"
         ]
     },
     {
