@@ -1,0 +1,56 @@
+#!/bin/sh
+
+set -e
+
+# possible parameters
+CMD_RUN=devrun
+CMD_DEBUG=devdebug
+
+usage(){
+    echo ""
+    echo "This script only accepts the following parameters:"
+    echo ""
+    echo "$CMD_RUN"
+    echo "$CMD_DEBUG"
+    echo ""
+}
+
+runCommand(){
+    if [ -z "$ODO_COMMAND_RUN" ]; then
+        echo "ODO_COMMAND_RUN is not set";
+    else
+        echo "ODO_COMMAND_RUN is $ODO_COMMAND_RUN";
+        if [ ! -z $ODO_COMMAND_RUN_WORKING_DIR ]; then
+            echo "Changing directory to $ODO_COMMAND_RUN_WORKING_DIR";
+            cd $ODO_COMMAND_RUN_WORKING_DIR
+        fi
+        sh -c "$ODO_COMMAND_RUN"
+    fi
+}
+
+debugCommand(){
+    if [ -z "$ODO_COMMAND_DEBUG" ]; then
+        echo "ODO_COMMAND_DEBUG is not set";
+    else
+        echo "ODO_COMMAND_DEBUG is $ODO_COMMAND_DEBUG";
+        if [ ! -z $ODO_COMMAND_DEBUG_WORKING_DIR ]; then
+            echo "Changing directory to $ODO_COMMAND_DEBUG_WORKING_DIR";
+            cd $ODO_COMMAND_DEBUG_WORKING_DIR
+        fi
+        sh -c "$ODO_COMMAND_DEBUG"
+    fi
+}
+
+case $1 in
+    $CMD_RUN)
+        runCommand
+        ;;
+    $CMD_DEBUG)
+        debugCommand
+        ;;
+    *)
+        echo "ERROR: unexpected parameter \"$1\""
+        usage
+        exit 1
+esac
+shift
