@@ -7,6 +7,10 @@ language: go
 
 jobs:
   include:
+    - stage: build image
+      name: "build image and push to quay.io/odo-dev/init-image-pr"
+      script:
+        - ./scripts/build-push-image.sh 
     - stage: test
       name: "core beta, java, source e2e tests"
       script:
