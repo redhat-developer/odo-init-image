@@ -19,12 +19,17 @@ runCommand(){
     if [ -z "$ODO_COMMAND_RUN" ]; then
         echo "ODO_COMMAND_RUN is not set";
     else
+        CMD=""
         echo "ODO_COMMAND_RUN is $ODO_COMMAND_RUN";
         if [ ! -z $ODO_COMMAND_RUN_WORKING_DIR ]; then
             echo "Changing directory to $ODO_COMMAND_RUN_WORKING_DIR";
-            cd $ODO_COMMAND_RUN_WORKING_DIR
+            CMD="cd $ODO_COMMAND_RUN_WORKING_DIR"
         fi
-        sh -c "$ODO_COMMAND_RUN"
+        
+        CMD="$CMD && $ODO_COMMAND_RUN"
+        echo "Executing command $CMD"
+        # Need to execute commands this way in order for variable substitution to work
+        sh -c "$CMD"
     fi
 }
 
@@ -32,12 +37,17 @@ debugCommand(){
     if [ -z "$ODO_COMMAND_DEBUG" ]; then
         echo "ODO_COMMAND_DEBUG is not set";
     else
+        CMD=""
         echo "ODO_COMMAND_DEBUG is $ODO_COMMAND_DEBUG";
         if [ ! -z $ODO_COMMAND_DEBUG_WORKING_DIR ]; then
             echo "Changing directory to $ODO_COMMAND_DEBUG_WORKING_DIR";
-            cd $ODO_COMMAND_DEBUG_WORKING_DIR
+            CMD="cd $ODO_COMMAND_DEBUG_WORKING_DIR"
         fi
-        sh -c "$ODO_COMMAND_DEBUG"
+        
+        CMD="$CMD && $ODO_COMMAND_DEBUG"
+        echo "Executing command $CMD"
+        # Need to execute commands this way in order for variable substitution to work
+        sh -c "$CMD"
     fi
 }
 
