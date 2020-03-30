@@ -7,7 +7,12 @@
             "rhscl/nodejs-10-rhel7",
             "rhscl/nodejs-12-rhel7",
             "bucharestgold/centos7-s2i-nodejs",
-            "nodeshift/centos7-s2i-nodejs"
+            "nodeshift/centos7-s2i-nodejs",
+
+            "rhscl/nodejs-8-rhel7",
+            "rhoar-nodejs/nodejs-8",
+            "rhoar-nodejs/nodejs-10",
+            "centos/nodejs-8-centos7"
         ]
     },
     {
