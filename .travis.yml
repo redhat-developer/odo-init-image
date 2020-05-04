@@ -4,6 +4,7 @@ services:
   - docker
 
 language: go
+go: "1.12"
 
 jobs:
   include:
