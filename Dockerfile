@@ -4,6 +4,8 @@
 
 # Build Go stuff (SupervisorD, getlanguage and go-init)
 
+# If you are adding any features that require a higher version of golang, such as golang 1.13 for example,
+# please contact maintainers to check of the releasing systems can handle the newer versions.
 FROM registry.svc.ci.openshift.org/openshift/release:golang-1.12 AS gobuilder
 
 RUN mkdir -p /go/src/github.com/ochinchina/supervisord
