@@ -4,7 +4,7 @@
 
 # Build Go stuff (SupervisorD, getlanguage and go-init)
 
-FROM registry.svc.ci.openshift.org/openshift/release:golang-1.11 AS gobuilder
+FROM registry.svc.ci.openshift.org/openshift/release:golang-1.12 AS gobuilder
 
 RUN mkdir -p /go/src/github.com/ochinchina/supervisord
 ADD vendor/supervisord /go/src/github.com/ochinchina/supervisord
