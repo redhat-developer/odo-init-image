@@ -4,7 +4,7 @@ set -e
 
 # possible parameters
 CMD_RUN=devrun
-CMD_DEBUG=devdebug
+CMD_DEBUG=debugrun
 
 usage(){
     echo ""
