@@ -25,9 +25,9 @@ RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o /tmp/go-init /go/src/githu
 # Final image
 FROM registry.access.redhat.com/ubi7/ubi
 
-LABEL com.redhat.component=atomic-openshift-odo-init-image-container \ 
+LABEL com.redhat.component=odo-init-container \ 
     com.redhat.license_terms=https://www.redhat.com/licenses/EULA_Red_Hat_Standard_20190722.pdf \ 
-    name=openshift/odo-init-image \ 
+    name=ocp-tools-4/odo-init-image \ 
     io.k8s.display-name=atomic-openshift-odo-init-image \
     maintainer=devtools-deploy@redhat.com \ 
     summary="Odo init image is an init container used by odo to initialze a 'component'"
