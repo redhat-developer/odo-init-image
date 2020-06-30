@@ -73,7 +73,7 @@ fi
 
 # Now that the assemble is successful; change autostart from false to true in supervisor.conf present on persistent volume mounted on "/opt/app-root"
 if [ -z ${ODO_SUPERVISORD_CONF_PATH}]; then
-    export ODO_SUPERVISORD_CONF_PATH = "/opt/app-root/conf/supervisor.conf"
+    export ODO_SUPERVISORD_CONF_PATH="/opt/app-root/conf/supervisor.conf"
 fi
 
 sed -i 's/autostart=false/autostart=true/g' ${ODO_SUPERVISORD_CONF_PATH}
