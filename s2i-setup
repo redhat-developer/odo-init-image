@@ -29,3 +29,11 @@ if [[ ${ODO_S2I_SRC_BIN_PATH} != *"/src"* ]];then
 fi
 
 mkdir -p ${PV_MNT_PT}/src
+
+# for converted components there is volume permission issue if we directly sync the source code to /tmp/src
+# devfile creates empty dir to sync source code, which has root ownership. if we directly sync code to /tmp/src
+# it would have root ownership and s2i-assemble script would fail for non root container.
+# To resolve this issue we are first syncing to another dir.
+if [ ! -z "${ODO_S2I_CONVERTED_DEVFILE}" ];then
+  rsync -ar /tmp/projects/ /tmp/src
+fi
