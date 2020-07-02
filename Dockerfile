@@ -11,16 +11,16 @@ FROM registry.svc.ci.openshift.org/openshift/release:golang-1.12 AS gobuilder
 RUN mkdir -p /go/src/github.com/ochinchina/supervisord
 ADD vendor/supervisord /go/src/github.com/ochinchina/supervisord
 WORKDIR /go/src/github.com/ochinchina/supervisord
-RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o /tmp/supervisord
+RUN CGO_ENABLED=0 go build -o /tmp/supervisord
 
 RUN mkdir -p /go/src/github.com/openshift/odo-supervisord-image
 ADD get-language /go/src/github.com/openshift/odo-supervisord-image/get-language/
 WORKDIR /go/src/github.com/openshift/odo-supervisord-image/get-language
-RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o /tmp/getlanguage  getlanguage.go
+RUN CGO_ENABLED=0 go build -o /tmp/getlanguage  getlanguage.go
 
 RUN mkdir -p /go/src/github.com/pablo-ruth/go-init
 ADD go-init/main.go /go/src/github.com/pablo-ruth/go-init/go-init.go
-RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o /tmp/go-init /go/src/github.com/pablo-ruth/go-init/go-init.go
+RUN CGO_ENABLED=0 go build -o /tmp/go-init /go/src/github.com/pablo-ruth/go-init/go-init.go
 
 # Final image
 FROM registry.access.redhat.com/ubi7/ubi
