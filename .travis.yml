@@ -1,12 +1,13 @@
-dist: trusty
+dist: xenial
 sudo: required
+
 services: 
   - docker
 
 language: go
 # If you are adding any features that require a higher version of golang, such as golang 1.13 for example,
 # please contact maintainers to check of the releasing systems can handle the newer versions.
-go: "1.12"
+go: "1.13.x"
 
 jobs:
   include:
