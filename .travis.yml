@@ -1,19 +1,22 @@
-dist: trusty
+dist: xenial
 sudo: required
+
 services: 
   - docker
 
 language: go
 # If you are adding any features that require a higher version of golang, such as golang 1.13 for example,
 # please contact maintainers to check of the releasing systems can handle the newer versions.
-go: "1.12"
+go: "1.13.x"
 
 jobs:
   include:
-    - stage: build image
-      name: "build image and push to quay.io/odo-dev/init-image-pr"
-      script:
-        - ./scripts/build-push-image.sh 
+    # not working due to security restrictions on travis
+    # secret env variables are not available for PR builds
+    #- stage: build image
+    #  name: "build image and push to quay.io/odo-dev/init-image-pr"
+    #  script:
+    #    - ./scripts/build-push-image.sh 
 
     # Run a few odo integration tests
     - stage: test
