@@ -33,7 +33,7 @@ LABEL com.redhat.component=odo-init-container \
     summary="Odo init image is an init container used by odo to initialze a 'component'"
 
 # Change version as needed
-LABEL version=1.1.3
+LABEL version=1.1.4
 
 ENV ODO_TOOLS_DIR /opt/odo-init/
 
