@@ -25,10 +25,11 @@ jobs:
         - ./scripts/testing.sh
         - cd $GOPATH/src/github.com/openshift/odo
         - ./scripts/oc-cluster.sh
-        - oc login -u developer
+        - make configure-supported-311-is
         - make goget-tools
         - make bin
         - sudo cp odo /usr/bin/odo
+        - odo login -u developer
         - travis_wait make test-generic
         - travis_wait make test-cmd-login-logout
         - travis_wait make test-cmd-cmp
@@ -40,10 +41,11 @@ jobs:
         - ./scripts/testing.sh
         - cd $GOPATH/src/github.com/openshift/odo
         - ./scripts/oc-cluster.sh
-        - oc login -u developer
+        - make configure-supported-311-is
         - make goget-tools
         - make bin
         - sudo cp odo /usr/bin/odo
+        - odo login -u developer
         - travis_wait make test-cmd-pref-config
         - travis_wait make test-cmd-url
         - travis_wait make test-cmd-debug
@@ -55,10 +57,11 @@ jobs:
         - ./scripts/testing.sh
         - cd $GOPATH/src/github.com/openshift/odo
         - ./scripts/oc-cluster.sh service-catalog
-        - oc login -u developer
+        - make configure-supported-311-is
         - make goget-tools
         - make bin
         - sudo cp odo /usr/bin/odo
+        - odo login -u developer
         - travis_wait make test-cmd-service
         - make test-cmd-link-unlink
         - travis_wait make test-cmd-cmp-sub
@@ -70,15 +73,29 @@ jobs:
         - ./scripts/testing.sh
         - cd $GOPATH/src/github.com/openshift/odo
         - ./scripts/oc-cluster.sh
-        - oc login -u developer
+        - make configure-supported-311-is
         - make goget-tools
         - make bin
         - sudo cp odo /usr/bin/odo
+        - odo login -u developer
         - travis_wait make test-cmd-watch
         - travis_wait make test-cmd-storage
         - travis_wait make test-cmd-app
         - travis_wait make test-cmd-push
         - travis_wait make test-cmd-project
+        - odo logout
+
+    - stage: test
+      name: "devfile catalog, devfile create, devfile push command integration tests"
+      script:
+        - ./scripts/testing.sh
+        - cd $GOPATH/src/github.com/openshift/odo
+        - ./scripts/oc-cluster.sh
+        - make configure-supported-311-is
+        - make goget-tools
+        - make bin
+        - sudo cp odo /usr/bin/odo
+        - odo login -u developer
         - travis_wait make test-cmd-devfile-catalog
         - travis_wait make test-cmd-devfile-create
         - travis_wait make test-cmd-devfile-push
@@ -91,10 +108,11 @@ jobs:
         - ./scripts/testing.sh
         - cd $GOPATH/src/github.com/openshift/odo
         - ./scripts/oc-cluster.sh
-        - oc login -u developer
+        - make configure-supported-311-is
         - make goget-tools
         - make bin
         - sudo cp odo /usr/bin/odo
+        - odo login -u developer
         - travis_wait make test-e2e-beta
         - travis_wait make test-e2e-java
         - travis_wait make test-e2e-source
