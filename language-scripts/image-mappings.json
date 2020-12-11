@@ -9,6 +9,7 @@
             "bucharestgold/centos7-s2i-nodejs",
             "nodeshift/centos7-s2i-nodejs",
             "ubi8/nodejs-12",
+            "ubi8/nodejs-14",
 
             "rhscl/nodejs-8-rhel7",
             "rhoar-nodejs/nodejs-8",
