@@ -25,10 +25,11 @@ jobs:
         - ./scripts/testing.sh
         - cd $GOPATH/src/github.com/openshift/odo
         - ./scripts/oc-cluster.sh
-        - oc login -u developer
+        - make configure-supported-311-is
         - make goget-tools
         - make bin
-        - sudo cp odo /usr/bin/odo
+        - sudo cp odo /usr/bin
+        - odo login -u developer
         - travis_wait make test-generic
         - travis_wait make test-cmd-login-logout
         - travis_wait make test-cmd-cmp
@@ -40,10 +41,11 @@ jobs:
         - ./scripts/testing.sh
         - cd $GOPATH/src/github.com/openshift/odo
         - ./scripts/oc-cluster.sh
-        - oc login -u developer
+        - make configure-supported-311-is
         - make goget-tools
         - make bin
-        - sudo cp odo /usr/bin/odo
+        - sudo cp odo /usr/bin
+        - odo login -u developer
         - travis_wait make test-cmd-pref-config
         - travis_wait make test-cmd-url
         - travis_wait make test-cmd-debug
@@ -55,12 +57,13 @@ jobs:
         - ./scripts/testing.sh
         - cd $GOPATH/src/github.com/openshift/odo
         - ./scripts/oc-cluster.sh service-catalog
-        - oc login -u developer
+        - make configure-supported-311-is
         - make goget-tools
         - make bin
-        - sudo cp odo /usr/bin/odo
+        - sudo cp odo /usr/bin
+        - odo login -u developer
         - travis_wait make test-cmd-service
-        - make test-cmd-link-unlink
+        - make test-cmd-link-unlink-311-cluster
         - travis_wait make test-cmd-cmp-sub
         - odo logout
 
@@ -70,10 +73,11 @@ jobs:
         - ./scripts/testing.sh
         - cd $GOPATH/src/github.com/openshift/odo
         - ./scripts/oc-cluster.sh
-        - oc login -u developer
+        - make configure-supported-311-is
         - make goget-tools
         - make bin
-        - sudo cp odo /usr/bin/odo
+        - sudo cp odo /usr/bin
+        - odo login -u developer
         - travis_wait make test-cmd-watch
         - travis_wait make test-cmd-storage
         - travis_wait make test-cmd-app
@@ -91,10 +95,11 @@ jobs:
         - ./scripts/testing.sh
         - cd $GOPATH/src/github.com/openshift/odo
         - ./scripts/oc-cluster.sh
-        - oc login -u developer
+        - make configure-supported-311-is
         - make goget-tools
         - make bin
-        - sudo cp odo /usr/bin/odo
+        - sudo cp odo /usr/bin
+        - odo login -u developer
         - travis_wait make test-e2e-beta
         - travis_wait make test-e2e-java
         - travis_wait make test-e2e-source
