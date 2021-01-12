@@ -4,6 +4,8 @@
         "images": [
             "centos/nodejs-10-centos7",
             "centos/nodejs-12-centos7",
+            "centos7/nodejs-10-centos7",
+            "centos7/nodejs-12-centos7",
             "rhscl/nodejs-10-rhel7",
             "rhscl/nodejs-12-rhel7",
             "bucharestgold/centos7-s2i-nodejs",
