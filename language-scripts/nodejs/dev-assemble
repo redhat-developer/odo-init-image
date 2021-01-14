@@ -96,9 +96,11 @@ if [ ! -z "$NPM_MIRROR" ]; then
 fi
 
 echo "---> Building your Node application from source"
-echo -e "Current git config"
-git config --list
 
+if [ -x `which git` ]; then
+	echo -e "Current git config"
+	git config --list
+fi
 
 if [ ! -z "$YARN_ENABLED" ]; then
 	echo "---> Using 'yarn install' with YARN_ARGS"
