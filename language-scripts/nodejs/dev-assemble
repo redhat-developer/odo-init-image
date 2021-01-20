@@ -97,11 +97,6 @@ fi
 
 echo "---> Building your Node application from source"
 
-if [ -x `which git` ]; then
-	echo -e "Current git config"
-	git config --list
-fi
-
 if [ ! -z "$YARN_ENABLED" ]; then
 	echo "---> Using 'yarn install' with YARN_ARGS"
 	npx yarn install $YARN_ARGS
