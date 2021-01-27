@@ -54,13 +54,6 @@ else
   set -x
 fi
 
-export GIT_COMMITTER_NAME="unknown"
-export and GIT_COMMITTER_EMAIL="unknown@localhost.com"
-
-if [ -x `which git` ]; then
-  git --version
-fi
-
 # Runs the nodejs application server.
 run_node() {
   echo -e "Using Node.js version: $(node --version)"
