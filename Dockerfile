@@ -30,7 +30,7 @@ LABEL com.redhat.component=odo-init-container \
     name=ocp-tools-4/odo-init-image \ 
     io.k8s.display-name=atomic-openshift-odo-init-image \
     maintainer=devtools-deploy@redhat.com \ 
-    summary="Odo init image is an init container used by odo to initialze a 'component'"
+    summary="odo init image is an init container used by odo to initialze a 'component'"
 
 # Change version as needed
 LABEL version=1.1.10

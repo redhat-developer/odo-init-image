@@ -21,7 +21,7 @@ runCommand(){
     else
         CMD=""
         echo "ODO_COMMAND_RUN is $ODO_COMMAND_RUN";
-        if [ ! -z $ODO_COMMAND_RUN_WORKING_DIR ]; then
+        if [ -n "$ODO_COMMAND_RUN_WORKING_DIR" ]; then
             echo "Changing directory to $ODO_COMMAND_RUN_WORKING_DIR";
             CMD="cd $ODO_COMMAND_RUN_WORKING_DIR &&"
         fi
@@ -39,7 +39,7 @@ debugCommand(){
     else
         CMD=""
         echo "ODO_COMMAND_DEBUG is $ODO_COMMAND_DEBUG";
-        if [ ! -z $ODO_COMMAND_DEBUG_WORKING_DIR ]; then
+        if [ -n "$ODO_COMMAND_DEBUG_WORKING_DIR" ]; then
             echo "Changing directory to $ODO_COMMAND_DEBUG_WORKING_DIR";
             CMD="cd $ODO_COMMAND_DEBUG_WORKING_DIR &&"
         fi
