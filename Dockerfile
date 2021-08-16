@@ -6,7 +6,7 @@
 
 # If you are adding any features that require a higher version of golang, such as golang 1.13 for example,
 # please contact maintainers to check of the releasing systems can handle the newer versions.
-FROM registry.svc.ci.openshift.org/openshift/release:golang-1.13 AS gobuilder
+FROM registry.ci.openshift.org/openshift/release:golang-1.15 AS gobuilder
 
 RUN mkdir -p /go/src/github.com/ochinchina/supervisord
 ADD vendor/supervisord /go/src/github.com/ochinchina/supervisord
