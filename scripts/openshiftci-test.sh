@@ -8,11 +8,11 @@ set +x
 if [[ -f $ODO_RABBITMQ_AMQP_URL ]]; then
     export AMQP_URI=$(cat $ODO_RABBITMQ_AMQP_URL)
 fi
-export AMQP_URI=${AMQP_URI:?"Please set AMQP_URI env with amqp uri or provide path of file containf it as ODO_RABBITMQ_AMQP_URL env"}
+export AMQP_URI=${AMQP_URI:?"Please set AMQP_URI env with amqp uri or provide path of file contains it as ODO_RABBITMQ_AMQP_URL env"}
 export SENDQUEUE=amqp.ci.queue.init.image.send
 export SENDTOPIC=amqp.ci.topic.init.image.send
 export SENDEXCHANGE=amqp.ci.exchange.init.image.send
-export RUNSCRIPT=srcipts/testing.sh
+export RUNSCRIPT=scripts/testing.sh
 
 # show commands
 set -x
