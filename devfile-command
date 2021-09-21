@@ -16,6 +16,11 @@ usage(){
 }
 
 runCommand(){
+    # test if project directory is empty. If so, nothing to run
+    # command is also valid whan env variable is empty
+    if [ -z "$(ls -A $ODO_COMMAND_RUN_WORKING_DIR)" ]; then
+        return
+    fi
     if [ -z "$ODO_COMMAND_RUN" ]; then
         echo "ODO_COMMAND_RUN is not set";
     else
