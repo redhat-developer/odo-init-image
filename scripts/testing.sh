@@ -16,8 +16,8 @@ set -x
 
 # create project for the image
 oc new-project $IMAGE_NAMESPACE
-# add labels to the namespace for cleanup purpose
-oc label namespace $IMAGE_NAMESPACE -l app=testing -l team=odo
+# add configmap to the namespace for cleanup purpose
+oc create configmap config-map-for-cleanup --from-literal type=testing --from-literal team=odo -n $IMAGE_NAMESPACE
 
 # build odo-init-image
 . ./scripts/build-push-image.sh
