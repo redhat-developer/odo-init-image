@@ -7,6 +7,7 @@ DUMBINIT_VERSION="1.2.2"
 ##
 VDUMBINIT_VERSION="v${DUMBINIT_VERSION}"
 REQUIREMENTS_DIR="$(pwd)/vendor"
+SUPERVISORD_VERSION="0.7.3"
 
 update_fix_permissions() {
     echo "Downloading fix permissions script"
@@ -31,9 +32,10 @@ update_supervisord() {
     echo "Downloading supervisord src"
     SUPERVISORD_MOD_NAME="github.com/ochinchina/supervisord"
     SUPERVISORD_DOWNLOAD_TARGET="${REQUIREMENTS_DIR}/supervisord";
-    SUPERVISORD_DOWNLOAD="https://${SUPERVISORD_MOD_NAME}/archive/${VSUPERVISORD_VERSION}.tar.gz"
+               #https://github.com/ochinchina/supervisord/archive/refs/tags/v0.7.3.tar.gz
+    SUPERVISORD_DOWNLOAD="https://${SUPERVISORD_MOD_NAME}/archive/refs/tags/v${SUPERVISORD_VERSION}.tar.gz"
     SUPERVISORD_TARBALL_NAME="supervisord-${SUPERVISORD_VERSION}"
-    download_tar $SUPERVISORD_DOWNLOAD $SUPERVISORD_DOWNLOAD_TARGET $SUPERVISORD_TARBALL_NAEM
+    download_tar $SUPERVISORD_DOWNLOAD $SUPERVISORD_DOWNLOAD_TARGET $SUPERVISORD_TARBALL_NAME
     echo "Vendoring supervisord"
     pushd $SUPERVISORD_DOWNLOAD_TARGET
     if [ ! -f "./go.mod" ]; then
