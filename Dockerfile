@@ -6,12 +6,12 @@
 
 # If you are adding any features that require a higher version of golang, such as golang 1.16 for example,
 # please contact maintainers to check of the releasing systems can handle the newer versions.
-FROM registry.ci.openshift.org/openshift/release:golang-1.15 AS gobuilder
+FROM registry.ci.openshift.org/openshift/release:golang-1.16 AS gobuilder
 
 RUN mkdir -p /go/src/github.com/ochinchina/supervisord
 ADD vendor/supervisord /go/src/github.com/ochinchina/supervisord
 WORKDIR /go/src/github.com/ochinchina/supervisord
-RUN CGO_ENABLED=0 go build -o /tmp/supervisord
+RUN CGO_ENABLED=0 GO111MODULE=off go build -o /tmp/supervisord
 
 RUN mkdir -p /go/src/github.com/openshift/odo-supervisord-image
 ADD get-language /go/src/github.com/openshift/odo-supervisord-image/get-language/
