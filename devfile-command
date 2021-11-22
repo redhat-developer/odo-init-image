@@ -18,7 +18,8 @@ usage(){
 runCommand(){
     # test if project directory is empty. If so, nothing to run
     # command is also valid whan env variable is empty
-    if [ -z "$(ls -A $ODO_COMMAND_RUN_WORKING_DIR)" ]; then
+    # Need to execute commands this way in order for variable substitution to work
+    if [ -z "$(sh -c "ls -A $ODO_COMMAND_RUN_WORKING_DIR")" ]; then
         return
     fi
     if [ -z "$ODO_COMMAND_RUN" ]; then
