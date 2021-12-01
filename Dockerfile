@@ -4,18 +4,16 @@
 
 # Build Go stuff (SupervisorD, go-init)
 
-# If you are adding any features that require a higher version of golang, such as golang 1.16 for example,
-# please contact maintainers to check of the releasing systems can handle the newer versions.
-FROM registry.ci.openshift.org/openshift/release:golang-1.16 AS gobuilder
+FROM registry.access.redhat.com/ubi8/go-toolset:1.16.7 AS gobuilder
 
-RUN mkdir -p /go/src/github.com/ochinchina/supervisord
-ADD vendor/supervisord /go/src/github.com/ochinchina/supervisord
-WORKDIR /go/src/github.com/ochinchina/supervisord
+RUN mkdir -p /opt/app-root/src/go/src/github.com/ochinchina/supervisord
+ADD vendor/supervisord /opt/app-root/src/go/src/github.com/ochinchina/supervisord
+WORKDIR /opt/app-root/src/go/src/github.com/ochinchina/supervisord
 RUN CGO_ENABLED=0 GO111MODULE=off go build -o /tmp/supervisord
 
-RUN mkdir -p /go/src/github.com/pablo-ruth/go-init
-ADD go-init/main.go /go/src/github.com/pablo-ruth/go-init/go-init.go
-RUN CGO_ENABLED=0 go build -o /tmp/go-init /go/src/github.com/pablo-ruth/go-init/go-init.go
+RUN mkdir -p /opt/app-root/src/go/src/github.com/pablo-ruth/go-init
+ADD go-init/main.go /opt/app-root/src/go/src/github.com/pablo-ruth/go-init/go-init.go
+RUN CGO_ENABLED=0 go build -o /tmp/go-init /opt/app-root/src/go/src/github.com/pablo-ruth/go-init/go-init.go
 
 # Final image
 FROM registry.access.redhat.com/ubi7/ubi
