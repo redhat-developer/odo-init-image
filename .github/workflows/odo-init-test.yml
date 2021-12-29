@@ -1,3 +1,9 @@
+# This workflow will build and test odo-init-image and setup necessary to run integration tests
+#
+# Env required for this workflow:
+#
+# 1. Setup secrets in your repository: IBM_CLOUD_API_KEY, SSH_PRIVATE_KEY, REGISTRY_PASSWORD
+# 2. Change the values for the IC_REGION
 name: odo-init-image-test
 on: [ push ]
 
