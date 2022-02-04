@@ -1,0 +1,117 @@
+# This workflow will build and test odo-init-image and setup necessary to run integration tests
+#
+# Env required for this workflow:
+#
+# 1. Setup secrets in your repository: IBM_CLOUD_API_KEY, SSH_PRIVATE_KEY, REGISTRY_PASSWORD
+# 2. Change the values for the IC_REGION
+name: odo-init-image-test
+on: [ push ]
+
+env:
+  GITHUB_SHA: ${{ github.sha }}
+  IBM_CLOUD_API_KEY: ${{ secrets.IBM_CLOUD_API_KEY }}
+  IBM_CLOUD_REGION: eu-de
+  OPENSHIFT_CLUSTER_ENDPOINT: ${{ secrets.OPENSHIFT_CLUSTER_ENDPOINT }}
+  KUBE_CLUSTER_ID: ${{ secrets.IBM_CLOUD_KUBE_CLUSTER_ID }}
+
+jobs:
+  build:
+    name: odo-init-image-test
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Add Cleanup Tag
+      run: echo "LABEL quay.expires-after=20h" >> Dockerfile
+
+    - name: Build Image
+      id: build-image
+      uses: redhat-actions/buildah-build@v2
+      with:
+        image: odo-init-pr
+        tags: ${{ github.sha }}
+        containerfiles: |
+          ./Dockerfile
+
+    # Podman Login action (https://github.com/redhat-actions/podman-login) also be used to log in,
+    # in which case 'username' and 'password' can be omitted.
+    - name: Push To quay.io
+      id: push-to-quay
+      uses: redhat-actions/push-to-registry@v2
+      with:
+        image: ${{ steps.build-image.outputs.image }}
+        tags: ${{ steps.build-image.outputs.tags }}
+        registry: quay.io/odo-dev
+        username: odo-dev+odo_init_tester
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+
+    - name: Print image url
+      env:
+        ODO_BOOTSTRAPPER_IMAGE: "quay.io/odo-dev/${{ steps.build-image.outputs.image }}:${{ github.sha }}"
+      run: echo $ODO_BOOTSTRAPPER_IMAGE
+
+      #run: echo "$ODO_BOOTSTRAPPER_IMAGE \n\tImage pushed to ${{ steps.push-to-quay.outputs.registry-paths }}"
+    - name: Checkout odo repo
+      uses: actions/checkout@v2
+      with:
+        repository: redhat-developer/odo
+        path: odo
+
+    - name: Install oc
+      uses: redhat-actions/oc-installer@v1
+
+    - name: Connect to Openshift cluster
+      uses: redhat-actions/oc-login@v1
+      with:
+        openshift_server_url: ${{ env.OPENSHIFT_CLUSTER_ENDPOINT }}
+        openshift_username: apikey
+        openshift_password: ${{ env.IBM_CLOUD_API_KEY }}
+
+    - name: Setup Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: '^1.16.1'
+
+    - name: Build odo
+      run: make install
+      working-directory: ./odo
+
+    - name: Run Integration tests
+      env:
+        ODO_BOOTSTRAPPER_IMAGE: "quay.io/odo-dev/${{ steps.build-image.outputs.image }}:${{ github.sha }}"
+      run: |
+        make test-integration
+      working-directory: ./odo
+      
+    - name: Run Devfile Integration tests
+      env:
+        ODO_BOOTSTRAPPER_IMAGE: "quay.io/odo-dev/${{ steps.build-image.outputs.image }}:${{ github.sha }}"
+      run: |
+        make test-integration-devfile
+      working-directory: ./odo
+    - name: Run Operator Hub Integration tests
+      env:
+        ODO_BOOTSTRAPPER_IMAGE: "quay.io/odo-dev/${{ steps.build-image.outputs.image }}:${{ github.sha }}"
+      run: |
+        make test-operator-hub
+      working-directory: ./odo
+    - name: Run Login/logout Integration tests
+      env:
+        ODO_BOOTSTRAPPER_IMAGE: "quay.io/odo-dev/${{ steps.build-image.outputs.image }}:${{ github.sha }}"
+        SKIP_USER_LOGIN_TESTS: true
+      run: |
+        make test-cmd-login-logout
+      working-directory: ./odo
+    - name: Run Command Integration tests
+      env:
+        ODO_BOOTSTRAPPER_IMAGE: "quay.io/odo-dev/${{ steps.build-image.outputs.image }}:${{ github.sha }}"
+      run: |
+        make test-cmd-project
+      working-directory: ./odo
+    - name: Run e2e tests
+      env:
+        ODO_BOOTSTRAPPER_IMAGE: "quay.io/odo-dev/${{ steps.build-image.outputs.image }}:${{ github.sha }}"
+      run: |
+        make test-e2e-all
+      working-directory: ./odo
