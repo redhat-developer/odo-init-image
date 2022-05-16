@@ -4,7 +4,7 @@
 
 # Build Go stuff (SupervisorD, go-init)
 
-FROM registry.access.redhat.com/ubi8/go-toolset:1.16.7 AS gobuilder
+FROM registry.access.redhat.com/ubi8/go-toolset:1.17.7-13 AS gobuilder
 
 RUN mkdir -p /opt/app-root/src/go/src/github.com/ochinchina/supervisord
 ADD vendor/supervisord /opt/app-root/src/go/src/github.com/ochinchina/supervisord
